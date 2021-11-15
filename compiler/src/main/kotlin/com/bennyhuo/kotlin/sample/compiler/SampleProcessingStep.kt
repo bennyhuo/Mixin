@@ -11,7 +11,7 @@ import javax.tools.Diagnostic
  */
 class SampleProcessingStep : XProcessingStep {
     override fun annotations(): Set<String> {
-        return setOf("com.bennyhuo.kotlin.sample.Foo")
+        return setOf("com.bennyhuo.kotlin.sample.annotations.Foo")
     }
 
     override fun process(
