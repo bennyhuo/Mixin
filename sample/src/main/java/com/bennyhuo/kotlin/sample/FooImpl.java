@@ -1,12 +1,14 @@
 package com.bennyhuo.kotlin.sample;
 
-import com.bennyhuo.kotlin.sample.annotations.Decorate;
 import com.bennyhuo.kotlin.sample.annotations.Decorator;
 
-@Decorate
+@Decorator(Decorators.CachedDecorator.class)
+@Decorator(Decorators.TimeMeasureDecorator.class)
+@Decorator(Decorators.SymbolDecorator.class)
 public class FooImpl implements Foo {
     @Override
     public String bar() {
         return "Hello World";
     }
 }
+

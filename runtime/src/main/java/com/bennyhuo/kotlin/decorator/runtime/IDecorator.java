@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.sample;
+package com.bennyhuo.kotlin.decorator.runtime;
 
 public interface IDecorator<T> {
 
