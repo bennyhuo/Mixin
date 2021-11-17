@@ -1,18 +1,17 @@
 package com.bennyhuo.kotlin.sample.compiler
 
 import androidx.room.compiler.processing.*
-import com.bennyhuo.kotlin.sample.annotations.Merge
+import com.bennyhuo.kotlin.sample.annotations.Composite
 import com.squareup.javapoet.*
 import javax.lang.model.element.Modifier
 import androidx.room.compiler.processing.isVoid
-import kotlin.collections.ArrayList
 
 /**
  * Created by benny.
  */
 class SampleProcessingStep : XProcessingStep {
     override fun annotations(): Set<String> {
-        return setOf(Merge::class.java.name)
+        return setOf(Composite::class.java.name)
     }
 
     override fun process(
@@ -20,17 +19,17 @@ class SampleProcessingStep : XProcessingStep {
         elementsByAnnotation: Map<String, Set<XElement>>
     ): Set<XElement> {
         val elements =
-            elementsByAnnotation[Merge::class.java.name] ?: return emptySet()
+            elementsByAnnotation[Composite::class.java.name] ?: return emptySet()
 
         elements.filterIsInstance<XTypeElement>()
             .sortedBy { it.qualifiedName }
             .groupingBy {
-                it.getAnnotation(Merge::class)!!.value.let {
+                it.getAnnotation(Composite::class)!!.value.let {
                     ClassName.get(it.packageName, it.name)
                 }
             }.aggregate { key, accumulator: TypeHub?, element, first ->
                 val acc = accumulator ?: TypeHub(
-                    TypeSpec.classBuilder(key.simpleName().capitalize()),
+                    TypeSpec.classBuilder(key.simpleName().capitalize()).addModifiers(Modifier.PUBLIC),
                     MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
                 )
 
@@ -49,6 +48,7 @@ class SampleProcessingStep : XProcessingStep {
                 )
 
                 element.getDeclaredMethods()
+                    .sortedBy { it.name }
                     .filter {
                         it.isPublic()
                     }.forEach { methodElement ->
@@ -85,6 +85,7 @@ class SampleProcessingStep : XProcessingStep {
                             }.build()
 
                         acc.typeBuilder.addMethod(method)
+                            .addOriginatingElement(element)
                     }
                 
                 acc.typeBuilder.typeVariables.groupBy { it.name }

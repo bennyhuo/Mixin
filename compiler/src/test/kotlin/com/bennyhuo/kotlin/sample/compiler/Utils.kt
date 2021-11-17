@@ -22,7 +22,7 @@ class SourceFileInfo(val name: String) {
     }
 }
 
-fun doTest(path: String, compilation: KotlinCompilation) {
+fun doTest(path: String, compilation: KotlinCompilation, generatedSourceFolder: File) {
     val lines = File(path).readLines()
         .dropWhile { it.trim() != SOURCE_START_LINE }
     val sourceLines =
@@ -50,7 +50,7 @@ fun doTest(path: String, compilation: KotlinCompilation) {
     compilation.sources = sourceFiles
     assertEquals(compilation.compile().exitCode, KotlinCompilation.ExitCode.OK)
 
-    val generatedSource = compilation.kspSourcesDir.walkTopDown()
+    val generatedSource = generatedSourceFolder.walkTopDown()
         .filter { !it.isDirectory }
         .fold(StringBuilder()) { acc, it ->
             acc.append("//-------${it.name}------\n")

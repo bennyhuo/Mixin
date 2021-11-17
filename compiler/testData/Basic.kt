@@ -1,67 +1,82 @@
 // SOURCE
-// Foo.java
-package com.bennyhuo.kotlin.sample;
-
-public interface Foo {
-    String bar();
-}
-// Decorators.java
-package com.bennyhuo.kotlin.sample;
-
-import com.bennyhuo.kotlin.decorator.runtime.IDecorator;
-
-public class Decorators {
-    
-    public static class SymbolDecorator implements IDecorator<Foo> {
-
-        @Override
-        public Foo decorate(Foo foo) {
-            return () -> "<<<" + foo.bar() + ">>>";
-        }
-    }
-    
-    public static class TimeMeasureDecorator implements IDecorator<Foo> {
-
-        @Override
-        public Foo decorate(Foo foo) {
-            return () -> {
-                long start = System.currentTimeMillis();
-                String result = "<<<" + foo.bar() + ">>>";
-                System.out.println("Cost: " + (System.currentTimeMillis() - start));
-                return result;
-            };
-        }
-    }
-    
-    public static class CachedDecorator implements IDecorator<Foo> {
+package com.bennyhuo.kotlin.sample
         
-        private String cachedValue;
+import com.bennyhuo.kotlin.sample.annotations.Composite
 
-        @Override
-        public Foo decorate(Foo foo) {
-            return () -> {
-                if (cachedValue == null) {
-                    cachedValue = foo.bar();
-                }
-                return cachedValue;
-            };
-        }
+@Composite("xyz")
+class X(val x0: Int, val x1: String) {
+    fun x2() {
+        println("Hello X")
     }
+} 
 
-}
-// FooImpl.java
-package com.bennyhuo.kotlin.sample;
-
-import com.bennyhuo.kotlin.sample.annotations.Decorator;
-
-@Decorator(Decorators.CachedDecorator.class)
-@Decorator(Decorators.TimeMeasureDecorator.class)
-@Decorator(Decorators.SymbolDecorator.class)
-public class FooImpl implements Foo {
-    @Override
-    public String bar() {
-        return "Hello World";
+@Composite("xyz")
+class Y(val y0: IntArray, val y1: Array<String>) {
+    fun y2() {
+        println("Hello Y")
     }
 }
 
+@Composite("xyz")
+class Z {
+    fun z0() {
+        println("Hello Z")
+    }
+    
+    fun z1(value: String): String = value
+}
 // GENERATED
+//-------Xyz.java------
+package com.bennyhuo.kotlin.sample.annotations;
+
+import com.bennyhuo.kotlin.sample.X;
+import com.bennyhuo.kotlin.sample.Y;
+import com.bennyhuo.kotlin.sample.Z;
+import java.lang.String;
+
+public class Xyz {
+  private final X x;
+
+  private final Y y;
+
+  private final Z z;
+
+  public Xyz(int x0, String x1, int[] y0, String[] y1) {
+    x = new X(x0,x1);
+    y = new Y(y0,y1);
+    z = new Z();
+  }
+
+  public int getX0() {
+    return x.getX0();
+  }
+
+  public String getX1() {
+    return x.getX1();
+  }
+
+  public void x2() {
+     x.x2();
+  }
+
+  public int[] getY0() {
+    return y.getY0();
+  }
+
+  public String[] getY1() {
+    return y.getY1();
+  }
+
+  public void y2() {
+     y.y2();
+  }
+
+  public void z0() {
+     z.z0();
+  }
+
+  public String z1(String value) {
+    return z.z1(value);
+  }
+}
+
