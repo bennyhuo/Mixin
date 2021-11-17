@@ -12,12 +12,14 @@ repositories {
     mavenCentral()
 }
 
+val useKsp = extra.get("useKsp") == "true"
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":annotation"))
 
-    ksp(project(":compiler"))
-    kapt(project(":compiler"))
+    val processor = if (useKsp) "ksp" else "kapt" 
+    processor(project(":compiler"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

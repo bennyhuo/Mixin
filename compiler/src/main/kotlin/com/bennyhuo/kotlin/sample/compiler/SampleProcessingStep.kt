@@ -3,9 +3,9 @@ package com.bennyhuo.kotlin.sample.compiler
 import androidx.room.compiler.processing.*
 import com.bennyhuo.kotlin.sample.annotations.Merge
 import com.squareup.javapoet.*
-import java.util.*
 import javax.lang.model.element.Modifier
 import androidx.room.compiler.processing.isVoid
+import kotlin.collections.ArrayList
 
 /**
  * Created by benny.
@@ -19,10 +19,10 @@ class SampleProcessingStep : XProcessingStep {
         env: XProcessingEnv,
         elementsByAnnotation: Map<String, Set<XElement>>
     ): Set<XElement> {
-        val decoratedElements =
+        val elements =
             elementsByAnnotation[Merge::class.java.name] ?: return emptySet()
 
-        decoratedElements.filterIsInstance<XTypeElement>()
+        elements.filterIsInstance<XTypeElement>()
             .sortedBy { it.qualifiedName }
             .groupingBy {
                 it.getAnnotation(Merge::class)!!.value.let {
@@ -34,12 +34,19 @@ class SampleProcessingStep : XProcessingStep {
                     MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)
                 )
 
+                acc.typeBuilder.addTypeVariables(element.type.typeArguments.map { 
+                    it.typeName as TypeVariableName 
+                })
+
                 val fieldName = element.name.decapitalize()
                 acc.typeBuilder.addField(
-                    FieldSpec.builder(element.className, fieldName, Modifier.PRIVATE, Modifier.FINAL)
-                        .build()
+                    FieldSpec.builder(
+                        element.type.typeName,
+                        fieldName,
+                        Modifier.PRIVATE,
+                        Modifier.FINAL
+                    ).build()
                 )
-
 
                 element.getDeclaredMethods()
                     .filter {
@@ -64,17 +71,27 @@ class SampleProcessingStep : XProcessingStep {
                                     )
                                     args.append(parameterElement.name).append(",")
                                 }
-                                
+
                                 val returnLiteral = if (methodElement.returnType.isVoid()) {
                                     ""
                                 } else {
                                     "return"
                                 }
-                                
-                                builder.addStatement("$returnLiteral $fieldName.${methodElement.name}(\$L)", args.removeSuffix(","))
+
+                                builder.addStatement(
+                                    "$returnLiteral $fieldName.${methodElement.name}(\$L)",
+                                    args.removeSuffix(",")
+                                )
                             }.build()
 
                         acc.typeBuilder.addMethod(method)
+                    }
+                
+                acc.typeBuilder.typeVariables.groupBy { it.name }
+                    .forEach { (name, typeVariables) -> 
+                        if (typeVariables.size > 1) {
+                            throw IllegalArgumentException("Duplicated type variable $name")
+                        }
                     }
 
                 val constructorArgs = StringBuilder()
@@ -83,7 +100,7 @@ class SampleProcessingStep : XProcessingStep {
                     acc.constructorBuilder.addParameter(it.type.typeName, it.name)
                     constructorArgs.append(it.name).append(",")
                 }
-
+                
                 acc.constructorBuilder.addStatement(
                     "$fieldName = new \$T(\$L)",
                     element.type.typeName,

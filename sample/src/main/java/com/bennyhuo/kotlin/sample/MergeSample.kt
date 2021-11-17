@@ -29,17 +29,27 @@ class Z {
 }
 
 @Merge("mn")
-class M {
+class M<T, P> {
     fun m0() {
         println("Hello m")
     }
     
     fun m1(value: String): String = value
+    
+    fun m2(value: T) {
+        
+    }
+    
+    fun m3(): P? = null
 }
 
 @Merge("mn")
-class N(val n0: IntArray, val n1: Array<String>) {
+class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
     fun n2() {
         println("Hello Y")
+    }
+    
+    fun n3(value: X) {
+        println(value)
     }
 }
