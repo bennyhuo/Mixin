@@ -30,12 +30,15 @@ class Z {
 
 @Composite("mn")
 class M<T, P> {
+    @A
     fun m0() {
         println("Hello m")
     }
-    
+
+    @B(1, "Hello")
     fun m1(value: String): String = value
-    
+
+    @C([1,2,3], ["Hello", "World"])
     fun m2(value: T) {
         
     }

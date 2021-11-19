@@ -19,4 +19,9 @@ class KaptTest {
     fun testGeneric() {
         doTest("testData/Generics.kt")
     }
+
+    @Test
+    fun testAnnotations() {
+        doTest("testData/Annotations.kt")
+    }
 }

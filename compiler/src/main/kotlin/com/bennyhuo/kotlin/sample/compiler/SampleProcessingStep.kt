@@ -5,6 +5,7 @@ import com.bennyhuo.kotlin.sample.annotations.Composite
 import com.squareup.javapoet.*
 import javax.lang.model.element.Modifier
 import androidx.room.compiler.processing.isVoid
+import javax.tools.Diagnostic
 
 /**
  * Created by benny.
@@ -57,6 +58,22 @@ class SampleProcessingStep : XProcessingStep {
 
                         val method = MethodSpec.methodBuilder(methodElement.name)
                             .addModifiers(Modifier.PUBLIC)
+                            .addAnnotations(methodElement.getAllAnnotations().map {
+                                AnnotationSpec.builder(it.type.typeName as ClassName)
+                                    .also { annotationBuilder ->
+
+                                        it.annotationValues.map {
+                                            when(val value = it.value) {
+                                                is List<*> -> {
+                                                    annotationBuilder.addMember(it.name, mapFormatter(it.value), *value.toTypedArray())
+                                                }
+                                                else -> {
+                                                    annotationBuilder.addMember(it.name, mapFormatter(it.value), value)
+                                                }
+                                            }
+                                        }
+                                    }.build()
+                            })
                             .returns(methodElement.returnType.typeName)
                             .also { builder ->
                                 if (methodElement.isStatic()) {
@@ -116,6 +133,23 @@ class SampleProcessingStep : XProcessingStep {
             }
 
         return emptySet()
+    }
+
+    private fun mapFormatter(value: Any?): String {
+        return when(value) {
+            is String -> {
+                "\$S"
+            }
+            is List<*> -> {
+                "{ ${value.joinToString { mapFormatter(it) }} }"
+            }
+            is Annotation, is XAnnotation -> {
+                throw UnsupportedOperationException("Annotations in Annotation is not supported.")
+            }
+            else -> {
+                "\$L"
+            }
+        }
     }
 
     class TypeHub(
