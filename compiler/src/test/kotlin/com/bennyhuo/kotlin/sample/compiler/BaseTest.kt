@@ -8,7 +8,7 @@ import org.junit.Test
 abstract class BaseTest {
 
     abstract fun doTest(path: String)
-    
+
     @Test
     fun testBasic() {
         doTest("testData/Basic.kt")
@@ -19,4 +19,8 @@ abstract class BaseTest {
         doTest("testData/Basic.kt")
     }
 
+    @Test
+    fun testModules() {
+        doTest("testData/Modules.kt")
+    }
 }

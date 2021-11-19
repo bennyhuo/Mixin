@@ -2,7 +2,6 @@ package com.bennyhuo.kotlin.sample.compiler
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import java.io.File
 import kotlin.test.assertEquals
@@ -13,16 +12,28 @@ import kotlin.test.assertEquals
 const val SOURCE_START_LINE = "// SOURCE"
 const val GENERATED_START_LINE = "// GENERATED"
 val FILE_NAME_PATTERN = Regex("""// ((\w+)\.(\w+))\s*""")
+val MODULE_NAME_PATTERN = Regex("""// MODULE: ([-\w]+)(\s*/\s*(([-\w]+)(\s*,\s*([-\w]+))*))?""")
 
-class SourceFileInfo(val name: String) {
+const val DEFAULT_MODULE = "default_module"
+const val DEFAULT_FILE = "default_file.kt"
+
+class SourceFileInfo(val module: String, val name: String, vararg val depends: String) {
     val sourceBuilder = StringBuilder()
 
     override fun toString(): String {
         return "$name: \n$sourceBuilder"
     }
+
+    fun copy(
+        module: String = this.module,
+        name: String = this.name,
+        vararg depends: String = this.depends
+    ): SourceFileInfo {
+        return SourceFileInfo(module, name, *depends)
+    }
 }
 
-fun doTest(path: String, compilation: KotlinCompilation, generatedSourceFolder: File) {
+fun doTest(path: String, creator: () -> CompileUnit) {
     val lines = File(path).readLines()
         .dropWhile { it.trim() != SOURCE_START_LINE }
     val sourceLines =
@@ -30,35 +41,70 @@ fun doTest(path: String, compilation: KotlinCompilation, generatedSourceFolder: 
     val generatedLines =
         lines.dropWhile { it.trim() != GENERATED_START_LINE }.drop(1)
 
-    val sourceFileLines = ArrayList<SourceFileInfo>()
-    sourceFileLines.add(SourceFileInfo("default_file.kt"))
-    sourceLines.fold(sourceFileLines) { acc, line ->
-        val result = FILE_NAME_PATTERN.find(line)
-        if (result == null) {
-            acc.last().sourceBuilder.append(line).appendLine()
+    val sourceFileInfos = ArrayList<SourceFileInfo>()
+    sourceFileInfos.add(SourceFileInfo(DEFAULT_MODULE, DEFAULT_FILE))
+    sourceLines.fold(sourceFileInfos) { acc, line ->
+        val moduleResult = MODULE_NAME_PATTERN.find(line)
+        if (moduleResult == null) {
+            val result = FILE_NAME_PATTERN.find(line)
+            if (result == null) {
+                acc.last().sourceBuilder.append(line).appendLine()
+            } else {
+                acc.add(acc.last().copy(name = result.groupValues[1]))
+            }
         } else {
-            acc.add(SourceFileInfo(result.groupValues[1]))
+            val depends = if (moduleResult.groupValues.size > 4) {
+                moduleResult.groupValues[3].split(",")
+                    .mapNotNull { it.trim().takeIf { it.isNotBlank() } }
+            } else emptyList()
+            sourceFileInfos.add(
+                SourceFileInfo(
+                    moduleResult.groupValues[1],
+                    DEFAULT_FILE,
+                    *depends.toTypedArray()
+                )
+            )
         }
         acc
     }
 
-    val sourceFiles =
-        sourceFileLines.map { SourceFile.new(it.name, it.sourceBuilder.toString()) }
+    val compileUnits = sourceFileInfos.groupBy {
+        it.module
+    }.mapValues {
+        creator().also { unit ->
+            unit.moduleName = it.key
+            unit.compilation.sources = it.value.map { sourceFileInfo ->
+                SourceFile.new(sourceFileInfo.name, sourceFileInfo.sourceBuilder.toString())
+            }
+            unit.dependencyNames += it.value.first().depends
+        }
+    }
+    
+    compileUnits.forEach { (_, unit) ->
+        unit.resolveDependencies(compileUnits)
+    }
+    
+    var left = compileUnits.values
+    while (left.isNotEmpty()) {
+        left.filter { it.canCompile() }.forEach { it.compile() }
+        left = left.filter { !it.isCompiled }
+    }
+    
+    compileUnits.values.forEach { unit ->
+        assertEquals(unit.compileResult?.exitCode, KotlinCompilation.ExitCode.OK)
+    }
 
-    val expectGenerateSource = generatedLines.joinToString("\n")
-
-    compilation.sources = sourceFiles
-    assertEquals(compilation.compile().exitCode, KotlinCompilation.ExitCode.OK)
-
-    val generatedSource = generatedSourceFolder.walkTopDown()
-        .filter { !it.isDirectory }
-        .fold(StringBuilder()) { acc, it ->
-            acc.append("//-------${it.name}------\n")
-            acc.append(it.readText())
-            acc
-        }.toString()
-
-    assertEquals(expectGenerateSource, generatedSource)
+//    val expectGenerateSource = generatedLines.joinToString("\n")
+//
+//    val generatedSource = generatedSourceFolder.walkTopDown()
+//        .filter { !it.isDirectory }
+//        .fold(StringBuilder()) { acc, it ->
+//            acc.append("//-------${it.name}------\n")
+//            acc.append(it.readText())
+//            acc
+//        }.toString()
+//
+//    assertEquals(expectGenerateSource, generatedSource)
 }
 
 fun compilationWithKsp(): KotlinCompilation {

@@ -8,9 +8,7 @@ import org.junit.Test
  */
 class KaptTest {
 
-    fun doTest(path: String) = compilationWithKapt().let { compilation ->
-        doTest(path, compilation, compilation.kaptSourceDir)
-    }
+    fun doTest(path: String) = doTest(path) { KaptCompileUnit(listOf(SampleKaptProcessor())) }
 
     @Test
     fun testBasic() {

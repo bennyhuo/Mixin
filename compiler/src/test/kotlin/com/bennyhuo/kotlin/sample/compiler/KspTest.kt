@@ -9,9 +9,7 @@ import org.junit.Test
 class KspTest {
 
     fun doTest(path: String) =
-        compilationWithKsp().let { compilation ->
-            doTest(path, compilation, compilation.kspSourcesDir)
-        }
+        doTest(path) { KspCompileUnit(listOf(SampleKspProcessor.Provider())) }
 
     @Test
     fun testBasic() {
@@ -21,5 +19,10 @@ class KspTest {
     @Test
     fun testGeneric() {
         doTest("testData/Generics.kt")
+    }
+
+    @Test
+    fun testModules() {
+        doTest("testData/Modules.kt")
     }
 }
