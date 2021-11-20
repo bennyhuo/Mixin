@@ -11,16 +11,12 @@ import javax.annotation.processing.AbstractProcessor
 /**
  * Created by benny.
  */
-abstract class CompileUnit {
-
-    var moduleName = ""
+abstract class Module(val name: String) {
 
     val classpaths = ArrayList<File>()
 
-    val compilation = newCompilation()
-
     val dependencyNames = ArrayList<String>()
-    val dependencies = ArrayList<CompileUnit>()
+    val dependencies = ArrayList<Module>()
 
     var isCompiled = false
 
@@ -28,10 +24,14 @@ abstract class CompileUnit {
 
     abstract val generatedSourceDir: File
 
+    abstract val classesDir: File
+
     val isReadyToCompile: Boolean
         get() {
             return !isCompiled && dependencies.all { it.isCompiled }
         }
+
+    protected val compilation = newCompilation()
 
     protected fun newCompilation(): KotlinCompilation {
         return KotlinCompilation().also { compilation ->
@@ -40,17 +40,18 @@ abstract class CompileUnit {
         }
     }
 
-    private fun dependsOn(libraryCompilation: KotlinCompilation) {
-        classpaths += libraryCompilation.classesDir
-        classpaths += libraryCompilation.classpaths
-    }
+    private fun dependsOn(libraryUnit: Module) {
+        classpaths += libraryUnit.classesDir
+        classpaths += libraryUnit.classpaths
 
-    fun dependsOn(libraryUnit: CompileUnit) {
-        dependsOn(libraryUnit.compilation)
         dependencies += libraryUnit
     }
 
-    fun resolveDependencies(compileUnits: Map<String, CompileUnit>) {
+    fun addSourceFiles(sourceFiles: List<SourceFile>) {
+        compilation.sources += sourceFiles
+    }
+
+    fun resolveDependencies(compileUnits: Map<String, Module>) {
         dependencyNames.mapNotNull {
             compileUnits[it]
         }.forEach {
@@ -66,11 +67,14 @@ abstract class CompileUnit {
     }
 
     override fun toString() =
-        "$moduleName: $isCompiled >> ${compileResult?.exitCode} ${compileResult?.messages}"
+        "$name: $isCompiled >> ${compileResult?.exitCode} ${compileResult?.messages}"
 
 }
 
-class KspCompileUnit(vararg kspProcessorProviders: SymbolProcessorProvider) : CompileUnit() {
+class KspModule(
+    moduleName: String,
+    vararg kspProcessorProviders: SymbolProcessorProvider
+) : Module(moduleName) {
 
     init {
         compilation.symbolProcessorProviders += kspProcessorProviders
@@ -78,13 +82,14 @@ class KspCompileUnit(vararg kspProcessorProviders: SymbolProcessorProvider) : Co
 
     override val generatedSourceDir: File = compilation.kspSourcesDir
 
+    private val realCompilation = newCompilation()
+    override val classesDir: File = realCompilation.classesDir
+
     override fun compile() {
         if (isCompiled) return
         isCompiled = true
 
         compilation.compile()
-
-        val realCompilation = newCompilation()
         realCompilation.sources = compilation.sources + compilation.kspSourcesDir.walkTopDown()
             .filter { !it.isDirectory }
             .map {
@@ -95,11 +100,15 @@ class KspCompileUnit(vararg kspProcessorProviders: SymbolProcessorProvider) : Co
     }
 }
 
-class KaptCompileUnit(vararg kaptProcessors: AbstractProcessor) : CompileUnit() {
+class KaptModule(
+    moduleName: String,
+    vararg kaptProcessors: AbstractProcessor
+) : Module(moduleName) {
 
     init {
         compilation.annotationProcessors += kaptProcessors
     }
 
     override val generatedSourceDir: File = compilation.kaptSourceDir
+    override val classesDir: File = compilation.classesDir
 }

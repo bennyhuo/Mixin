@@ -1,6 +1,5 @@
 package com.bennyhuo.kotlin.sample.compiler
 
-import com.tschuchort.compiletesting.kspSourcesDir
 import org.junit.Test
 
 /**
@@ -8,7 +7,9 @@ import org.junit.Test
  */
 class KaptTest {
 
-    fun doTest(path: String) = doTest(path) { KaptCompileUnit(SampleKaptProcessor()) }
+    fun doTest(path: String) = doTest(path) { name, sourceFiles ->
+        KaptModule(name, SampleKaptProcessor()).also { it.addSourceFiles(sourceFiles) } 
+    }
 
     @Test
     fun testBasic() {

@@ -16,6 +16,8 @@ package com.bennyhuo.kotlin.sample
 
 import com.bennyhuo.kotlin.sample.annotations.Composite
 
+class X1(val x: X)
+
 @Composite("xyz")
 class Y(val y0: IntArray, val y1: Array<String>) {
     fun y2() {
