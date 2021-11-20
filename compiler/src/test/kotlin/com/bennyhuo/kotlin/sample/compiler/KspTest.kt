@@ -8,7 +8,7 @@ import org.junit.Test
 class KspTest {
 
     fun doTest(path: String) =
-        doTest(path) { KspCompileUnit(listOf(SampleKspProcessor.Provider())) }
+        doTest(path) { KspCompileUnit(SampleKspProcessor.Provider()) }
 
     @Test
     fun testBasic() {

@@ -8,7 +8,7 @@ import org.junit.Test
  */
 class KaptTest {
 
-    fun doTest(path: String) = doTest(path) { KaptCompileUnit(listOf(SampleKaptProcessor())) }
+    fun doTest(path: String) = doTest(path) { KaptCompileUnit(SampleKaptProcessor()) }
 
     @Test
     fun testBasic() {

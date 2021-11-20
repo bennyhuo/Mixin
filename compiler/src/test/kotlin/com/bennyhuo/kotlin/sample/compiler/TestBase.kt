@@ -2,8 +2,6 @@ package com.bennyhuo.kotlin.sample.compiler
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.symbolProcessorProviders
-import org.jetbrains.kotlin.codegen.generateParameterNames
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -15,8 +13,8 @@ const val GENERATED_START_LINE = "// GENERATED"
 val FILE_NAME_PATTERN = Regex("""// FILE: ((\w+)\.(\w+))\s*""")
 val MODULE_NAME_PATTERN = Regex("""// MODULE: ([-\w]+)(\s*/\s*(([-\w]+)(\s*,\s*([-\w]+))*))?""")
 
-const val DEFAULT_MODULE = "default_module"
-const val DEFAULT_FILE = "default_file.kt"
+const val DEFAULT_MODULE = "default-module"
+const val DEFAULT_FILE = "DefaultFile.kt"
 
 class SourceFileInfo(val module: String, val name: String, vararg val depends: String) {
     val sourceBuilder = StringBuilder()
@@ -93,7 +91,7 @@ fun doTest(path: String, creator: () -> CompileUnit) {
 
     var left = compileUnits.values
     while (left.isNotEmpty()) {
-        left.filter { it.canCompile() }.forEach { it.compile() }
+        left.filter { it.isReadyToCompile }.forEach { it.compile() }
         left = left.filter { !it.isCompiled }
     }
     
@@ -104,19 +102,7 @@ fun doTest(path: String, creator: () -> CompileUnit) {
             .forEach { 
                 assertEquals(generatedSourceMap[unit.moduleName]?.sourceBuilder.toString(), it.readText())
             }
-
+        
         assertEquals(unit.compileResult?.exitCode, KotlinCompilation.ExitCode.OK)
     }
-
-//    val expectGenerateSource = generatedLines.joinToString("\n")
-//
-//    val generatedSource = generatedSourceFolder.walkTopDown()
-//        .filter { !it.isDirectory }
-//        .fold(StringBuilder()) { acc, it ->
-//            acc.append("//-------${it.name}------\n")
-//            acc.append(it.readText())
-//            acc
-//        }.toString()
-//
-//    assertEquals(expectGenerateSource, generatedSource)
 }
