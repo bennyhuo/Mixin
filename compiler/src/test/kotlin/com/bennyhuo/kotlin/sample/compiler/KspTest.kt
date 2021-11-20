@@ -1,6 +1,5 @@
 package com.bennyhuo.kotlin.sample.compiler
 
-import com.tschuchort.compiletesting.kspSourcesDir
 import org.junit.Test
 
 /**

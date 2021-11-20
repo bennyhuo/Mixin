@@ -29,6 +29,8 @@ class SampleProcessingStep : XProcessingStep {
                     ClassName.get(it.packageName, it.name)
                 }
             }.aggregate { key, accumulator: TypeHub?, element, first ->
+                
+                env.messager.printMessage(Diagnostic.Kind.WARNING, "process: ${element.name}")
                 val acc = accumulator ?: TypeHub(
                     TypeSpec.classBuilder(key.simpleName().capitalize()).addModifiers(Modifier.PUBLIC),
                     MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC)

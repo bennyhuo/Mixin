@@ -3,6 +3,7 @@ package com.bennyhuo.kotlin.sample.compiler
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import org.jetbrains.kotlin.codegen.generateParameterNames
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -11,7 +12,7 @@ import kotlin.test.assertEquals
  */
 const val SOURCE_START_LINE = "// SOURCE"
 const val GENERATED_START_LINE = "// GENERATED"
-val FILE_NAME_PATTERN = Regex("""// ((\w+)\.(\w+))\s*""")
+val FILE_NAME_PATTERN = Regex("""// FILE: ((\w+)\.(\w+))\s*""")
 val MODULE_NAME_PATTERN = Regex("""// MODULE: ([-\w]+)(\s*/\s*(([-\w]+)(\s*,\s*([-\w]+))*))?""")
 
 const val DEFAULT_MODULE = "default_module"
@@ -33,17 +34,10 @@ class SourceFileInfo(val module: String, val name: String, vararg val depends: S
     }
 }
 
-fun doTest(path: String, creator: () -> CompileUnit) {
-    val lines = File(path).readLines()
-        .dropWhile { it.trim() != SOURCE_START_LINE }
-    val sourceLines =
-        lines.takeWhile { it.trim() != GENERATED_START_LINE }.drop(1)
-    val generatedLines =
-        lines.dropWhile { it.trim() != GENERATED_START_LINE }.drop(1)
-
+fun parseFiles(lines: List<String>): List<SourceFileInfo> {
     val sourceFileInfos = ArrayList<SourceFileInfo>()
     sourceFileInfos.add(SourceFileInfo(DEFAULT_MODULE, DEFAULT_FILE))
-    sourceLines.fold(sourceFileInfos) { acc, line ->
+    lines.fold(sourceFileInfos) { acc, line ->
         val moduleResult = MODULE_NAME_PATTERN.find(line)
         if (moduleResult == null) {
             val result = FILE_NAME_PATTERN.find(line)
@@ -67,6 +61,19 @@ fun doTest(path: String, creator: () -> CompileUnit) {
         }
         acc
     }
+    return sourceFileInfos
+}
+
+fun doTest(path: String, creator: () -> CompileUnit) {
+    val lines = File(path).readLines()
+        .dropWhile { it.trim() != SOURCE_START_LINE }
+    val sourceLines =
+        lines.takeWhile { it.trim() != GENERATED_START_LINE }.drop(1)
+    val generatedLines =
+        lines.dropWhile { it.trim() != GENERATED_START_LINE }.drop(1)
+
+    val sourceFileInfos = parseFiles(sourceLines)
+    val generatedSourceFileInfos = parseFiles(generatedLines)
 
     val compileUnits = sourceFileInfos.groupBy {
         it.module
@@ -79,18 +86,25 @@ fun doTest(path: String, creator: () -> CompileUnit) {
             unit.dependencyNames += it.value.first().depends
         }
     }
-    
+
     compileUnits.forEach { (_, unit) ->
         unit.resolveDependencies(compileUnits)
     }
-    
+
     var left = compileUnits.values
     while (left.isNotEmpty()) {
         left.filter { it.canCompile() }.forEach { it.compile() }
         left = left.filter { !it.isCompiled }
     }
     
+    val generatedSourceMap = generatedSourceFileInfos.associateBy { it.module }
     compileUnits.values.forEach { unit ->
+        unit.generatedSourceDir.walkTopDown()
+            .filter { !it.isDirectory }
+            .forEach { 
+                assertEquals(generatedSourceMap[unit.moduleName]?.sourceBuilder.toString(), it.readText())
+            }
+
         assertEquals(unit.compileResult?.exitCode, KotlinCompilation.ExitCode.OK)
     }
 
@@ -105,18 +119,4 @@ fun doTest(path: String, creator: () -> CompileUnit) {
 //        }.toString()
 //
 //    assertEquals(expectGenerateSource, generatedSource)
-}
-
-fun compilationWithKsp(): KotlinCompilation {
-    return KotlinCompilation().apply {
-        inheritClassPath = true
-        symbolProcessorProviders = listOf(SampleKspProcessor.Provider())
-    }
-}
-
-fun compilationWithKapt(): KotlinCompilation {
-    return KotlinCompilation().apply {
-        inheritClassPath = true
-        annotationProcessors = listOf(SampleKaptProcessor())
-    }
 }

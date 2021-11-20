@@ -29,7 +29,7 @@ class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
     }
 }
 // GENERATED
-//-------Mn.java------
+// FILE: Mn.java
 package com.bennyhuo.kotlin.sample.annotations;
 
 import com.bennyhuo.kotlin.sample.M;

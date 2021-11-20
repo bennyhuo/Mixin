@@ -60,6 +60,8 @@ abstract class CompileUnit {
     fun canCompile(): Boolean {
         return !isCompiled && dependencies.all { it.isCompiled }
     }
+    
+    override fun toString() = "$moduleName: $isCompiled >> ${compileResult?.exitCode} ${compileResult?.messages}" 
 
 }
 
@@ -78,5 +80,5 @@ class KaptCompileUnit(kaptProcessors: List<AbstractProcessor>) : CompileUnit() {
         compilation.annotationProcessors = kaptProcessors
     }
 
-    override val generatedSourceDir: File = compilation.kspSourcesDir
+    override val generatedSourceDir: File = compilation.kaptSourceDir
 }

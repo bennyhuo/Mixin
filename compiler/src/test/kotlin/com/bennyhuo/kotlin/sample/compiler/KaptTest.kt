@@ -24,4 +24,9 @@ class KaptTest {
     fun testAnnotations() {
         doTest("testData/Annotations.kt")
     }
+
+    @Test
+    fun testModules() {
+        doTest("testData/Modules.kt")
+    }
 }
