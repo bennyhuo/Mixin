@@ -130,7 +130,7 @@ class SampleProcessingStep : XProcessingStep {
             }.map {
                 JavaFile.builder(it.key.packageName(), it.value.build()).build()
                     .let {
-                        env.filer.write(it)
+                        env.filer.write(it, XFiler.Mode.Aggregating)
                     }
             }
 
