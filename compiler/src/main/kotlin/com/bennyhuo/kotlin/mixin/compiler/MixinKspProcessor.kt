@@ -8,12 +8,8 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 class MixinKspProcessor(
     environment: SymbolProcessorEnvironment
 ) : KspBasicAnnotationProcessor(environment) {
-    init {
-        
-    }
-    override fun processingSteps() = listOf(
-        MixinProcessingStep()
-    )
+
+    override fun processingSteps() = listOf(MixinProcessingStep())
 
     class Provider : SymbolProcessorProvider {
         override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor {
