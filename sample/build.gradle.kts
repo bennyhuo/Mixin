@@ -19,7 +19,7 @@ val useKsp = extra.get("useKsp") == "true"
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(project(":annotation"))
+    implementation(project(":annotations"))
     implementation(project(":sample-library-1"))
     implementation(project(":sample-library-2"))
 

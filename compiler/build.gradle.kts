@@ -5,16 +5,13 @@ plugins {
     java
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
-
 repositories {
     maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(project(":annotation"))
+    implementation(project(":annotations"))
 
     implementation("androidx.room:room-compiler-processing:2.4.0-rc01")
     implementation("com.google.devtools.ksp:symbol-processing-api:1.6.0-1.0.1")

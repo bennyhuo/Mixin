@@ -12,16 +12,11 @@ class MixinIndexLoader {
 
     fun loadIndex(env: XProcessingEnv): List<XTypeElement> {
         return env.getTypeElementsFromPackage(MixinIndexGenerator.INDEX_PACKAGE)
-            .onEach { 
-                env.messager.printMessage(Diagnostic.Kind.WARNING, "index: ${it.name}")
-            }
             .mapNotNull { it.getAnnotation(MixinIndex::class) }
             .flatMap {
                 it.value.value.mapNotNull {
                     env.findTypeElement(it)
                 }
-            }.also { 
-                env.messager.printMessage(Diagnostic.Kind.WARNING, "${it.joinToString { it.qualifiedName }}")
             }
     }
 

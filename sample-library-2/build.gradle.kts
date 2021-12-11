@@ -13,7 +13,7 @@ val useKsp = extra.get("useKsp") == "true"
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(project(":annotation"))
+    implementation(project(":annotations"))
 
     val processor = if (useKsp) "ksp" else "kapt"
     processor(project(":compiler"))

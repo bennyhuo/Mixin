@@ -22,7 +22,6 @@ class MixinProcessingStep : XProcessingStep {
             ?.filterIsInstance<XTypeElement>()
             ?: return emptySet()
         
-        env.messager.printMessage(Diagnostic.Kind.WARNING, "main: $isMainModule")
         if (isMainModule) {
             MixinGenerator().generate(env, elements + MixinIndexLoader().loadIndex(env))
         } else {

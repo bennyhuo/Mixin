@@ -8,7 +8,7 @@ import com.bennyhuo.kotlin.mixin.annotations.Mixin
 @Mixin("com.bennyhuo.kotlin.mixin.sample", "Apis")
 class Api2 {
     
-    val url2 = "https://www.api1.com"
+    val url2 = "https://www.api2.com"
     
     fun getObject2(key: String): Any {
         return ""
