@@ -1,9 +1,9 @@
 // SOURCE
-package com.bennyhuo.kotlin.sample
+package com.bennyhuo.kotlin.mixin
 
-import com.bennyhuo.kotlin.sample.annotations.Composite
+import com.bennyhuo.kotlin.mixin.annotations.Mixin
 
-@Composite("mn")
+@Mixin("com.bennyhuo.kotlin.mixin.annotations", "mn")
 class M<T, P> {
     fun m0() {
         println("Hello m")
@@ -18,7 +18,7 @@ class M<T, P> {
     fun m3(): P? = null
 }
 
-@Composite("mn")
+@Mixin("com.bennyhuo.kotlin.mixin.annotations", "mn")
 class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
     fun n2() {
         println("Hello Y")
@@ -30,10 +30,10 @@ class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
 }
 // GENERATED
 // FILE: Mn.java
-package com.bennyhuo.kotlin.sample.annotations;
+package com.bennyhuo.kotlin.mixin.annotations;
 
-import com.bennyhuo.kotlin.sample.M;
-import com.bennyhuo.kotlin.sample.N;
+import com.bennyhuo.kotlin.mixin.M;
+import com.bennyhuo.kotlin.mixin.N;
 import java.lang.Number;
 import java.lang.String;
 
@@ -79,4 +79,3 @@ public class Mn<T, P, X extends Number> {
      n.n3(value);
   }
 }
-

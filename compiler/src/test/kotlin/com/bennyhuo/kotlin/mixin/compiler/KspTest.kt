@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.sample.compiler
+package com.bennyhuo.kotlin.mixin.compiler
 
 import org.junit.Test
 
@@ -8,7 +8,7 @@ import org.junit.Test
 class KspTest {
 
     fun doTest(path: String) = doTest(path) { name, sourceFiles ->
-        KspModule(name, SampleKspProcessor.Provider()).also { it.addSourceFiles(sourceFiles) }
+        KspModule(name, MixinKspProcessor.Provider()).also { it.addSourceFiles(sourceFiles) }
     }
 
     @Test
@@ -19,6 +19,11 @@ class KspTest {
     @Test
     fun testGeneric() {
         doTest("testData/Generics.kt")
+    }
+
+    @Test
+    fun testAnnotations() {
+        doTest("testData/Annotations.kt")
     }
 
     @Test

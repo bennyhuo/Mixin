@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.sample.compiler
+package com.bennyhuo.kotlin.mixin.compiler
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
@@ -86,10 +86,20 @@ fun doTest(path: String, creator: (name: String, sources: List<SourceFile>) -> M
     modules.forEach { (_, unit) ->
         unit.resolveDependencies(modules)
     }
-
+    
+    
     var left = modules.values
+    val argsForMain = mapOf("mixin.main" to "true")
     while (left.isNotEmpty()) {
-        left.filter { it.isReadyToCompile }.forEach { it.compile() }
+        left.groupBy { it.isReadyToCompile }
+            .let {
+                if (it[false] == null) {
+                    it[true]?.forEach { it.compile(argsForMain) }    
+                } else {
+                    it[true]?.forEach { it.compile() }
+                }
+            }
+        
         left = left.filter { !it.isCompiled }
     }
     

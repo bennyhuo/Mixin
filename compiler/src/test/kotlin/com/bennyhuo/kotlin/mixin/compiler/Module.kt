@@ -1,10 +1,7 @@
-package com.bennyhuo.kotlin.sample.compiler
+package com.bennyhuo.kotlin.mixin.compiler
 
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
-import com.tschuchort.compiletesting.KotlinCompilation
-import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspSourcesDir
-import com.tschuchort.compiletesting.symbolProcessorProviders
+import com.tschuchort.compiletesting.*
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
 
@@ -25,6 +22,8 @@ abstract class Module(val name: String) {
     abstract val generatedSourceDir: File
 
     abstract val classesDir: File
+    
+    abstract fun setArgs(args: Map<String, String>)
 
     val isReadyToCompile: Boolean
         get() {
@@ -59,10 +58,11 @@ abstract class Module(val name: String) {
         }
     }
 
-    open fun compile() {
+    open fun compile(args: Map<String, String> = emptyMap()) {
         if (isCompiled) return
         isCompiled = true
-
+        
+        setArgs(args)
         compileResult = compilation.compile()
     }
 
@@ -84,8 +84,12 @@ class KspModule(
 
     private val realCompilation = newCompilation()
     override val classesDir: File = realCompilation.classesDir
+    
+    override fun setArgs(args: Map<String, String>) {
+        compilation.kspArgs.putAll(args)
+    }
 
-    override fun compile() {
+    override fun compile(args: Map<String, String>) {
         if (isCompiled) return
         isCompiled = true
 
@@ -111,4 +115,8 @@ class KaptModule(
 
     override val generatedSourceDir: File = compilation.kaptSourceDir
     override val classesDir: File = compilation.classesDir
+    
+    override fun setArgs(args: Map<String, String>) {
+        compilation.kaptArgs.putAll(args)
+    }
 }

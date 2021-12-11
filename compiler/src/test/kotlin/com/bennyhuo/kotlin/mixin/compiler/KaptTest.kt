@@ -1,4 +1,4 @@
-package com.bennyhuo.kotlin.sample.compiler
+package com.bennyhuo.kotlin.mixin.compiler
 
 import org.junit.Test
 
@@ -8,7 +8,7 @@ import org.junit.Test
 class KaptTest {
 
     fun doTest(path: String) = doTest(path) { name, sourceFiles ->
-        KaptModule(name, SampleKaptProcessor()).also { it.addSourceFiles(sourceFiles) } 
+        KaptModule(name, MixinKaptProcessor()).also { it.addSourceFiles(sourceFiles) } 
     }
 
     @Test

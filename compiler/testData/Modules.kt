@@ -1,10 +1,10 @@
 // SOURCE
 // MODULE: library-a
-package com.bennyhuo.kotlin.sample
+package com.bennyhuo.kotlin.mixin
         
-import com.bennyhuo.kotlin.sample.annotations.Composite
+import com.bennyhuo.kotlin.mixin.annotations.Mixin
 
-@Composite("xyz")
+@Mixin("com.bennyhuo.kotlin.mixin.annotations", "xyz")
 class X(val x0: Int, val x1: String) {
     fun x2() {
         println("Hello X")
@@ -12,20 +12,20 @@ class X(val x0: Int, val x1: String) {
 } 
 
 // MODULE: library-b / library-a   , library-c
-package com.bennyhuo.kotlin.sample
+package com.bennyhuo.kotlin.mixin
 
-import com.bennyhuo.kotlin.sample.annotations.Composite
+import com.bennyhuo.kotlin.mixin.annotations.Mixin
 
 class X1(val x: X)
 
-@Composite("xyz")
+@Mixin("com.bennyhuo.kotlin.mixin.annotations", "xyz")
 class Y(val y0: IntArray, val y1: Array<String>) {
     fun y2() {
         println("Hello Y")
     }
 }
 
-@Composite("xyz")
+@Mixin("com.bennyhuo.kotlin.mixin.annotations", "xyz")
 class Z {
     fun z0() {
         println("Hello Z")
@@ -36,9 +36,9 @@ class Z {
 // GENERATED
 // MODULE: library-a
 // FILE: Xyz.java
-package com.bennyhuo.kotlin.sample.annotations;
+package com.bennyhuo.kotlin.mixin.annotations;
 
-import com.bennyhuo.kotlin.sample.X;
+import com.bennyhuo.kotlin.mixin.X;
 import java.lang.String;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,10 +64,10 @@ public class Xyz {
 }
 // MODULE: library-b
 // FILE: Xyz.java
-package com.bennyhuo.kotlin.sample.annotations;
+package com.bennyhuo.kotlin.mixin.annotations;
 
-import com.bennyhuo.kotlin.sample.Y;
-import com.bennyhuo.kotlin.sample.Z;
+import com.bennyhuo.kotlin.mixin.Y;
+import com.bennyhuo.kotlin.mixin.Z;
 import java.lang.String;
 import org.jetbrains.annotations.NotNull;
 

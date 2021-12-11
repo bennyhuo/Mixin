@@ -1,1 +1,1 @@
-com.bennyhuo.kotlin.sample.compiler.SampleKaptProcessor
+com.bennyhuo.kotlin.mixin.compiler.MixinKaptProcessor
