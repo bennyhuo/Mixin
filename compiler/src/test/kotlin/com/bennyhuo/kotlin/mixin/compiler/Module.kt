@@ -87,13 +87,12 @@ class KspModule(
     
     override fun setArgs(args: Map<String, String>) {
         compilation.kspArgs.putAll(args)
+        realCompilation.kspArgs.putAll(args)
     }
 
     override fun compile(args: Map<String, String>) {
-        if (isCompiled) return
-        isCompiled = true
-
-        compilation.compile()
+        super.compile(args)
+        
         realCompilation.sources = compilation.sources + compilation.kspSourcesDir.walkTopDown()
             .filter { !it.isDirectory }
             .map {

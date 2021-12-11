@@ -2,6 +2,7 @@ package com.bennyhuo.kotlin.mixin.compiler
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
+import org.jetbrains.kotlin.js.inline.util.collectAccessors
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -104,16 +105,22 @@ fun doTest(path: String, creator: (name: String, sources: List<SourceFile>) -> M
     }
     
     val generatedSourceMap = generatedSourceFileInfos.associateBy { it.moduleName }
+    val contentCollector = StringBuilder() to StringBuilder()
     modules.values.forEach { module ->
+        contentCollector.first.append("// MODULE: ${module.name}\n")
+        contentCollector.second.append("// MODULE: ${module.name}\n")
         module.generatedSourceDir.walkTopDown()
             .filter { !it.isDirectory }
             .forEach {
-                assertEquals(
-                    generatedSourceMap[module.name]?.sourceBuilder.toString(),
-                    it.readText()
-                )
+                contentCollector.first.append("// FILE: ${it.name}\n")
+                    .append(generatedSourceMap[module.name]?.sourceBuilder.toString())
+                
+                contentCollector.second.append("// FILE: ${it.name}\n")
+                    .append(it.readText())
             }
         
         assertEquals(module.compileResult?.exitCode, KotlinCompilation.ExitCode.OK)
     }
+    
+    assertEquals(contentCollector.first, contentCollector.second)
 }

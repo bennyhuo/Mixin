@@ -1,106 +1,157 @@
 // SOURCE
 // MODULE: library-a
-package com.bennyhuo.kotlin.mixin
-        
-import com.bennyhuo.kotlin.mixin.annotations.Mixin
+package com.bennyhuo.kotlin.mixin.sample.library1
 
-@Mixin("com.bennyhuo.kotlin.mixin.annotations", "xyz")
-class X(val x0: Int, val x1: String) {
-    fun x2() {
-        println("Hello X")
+import com.bennyhuo.kotlin.mixin.annotations.Mixin
+import kotlin.reflect.full.declaredMembers
+
+@Mixin("com.bennyhuo.kotlin.mixin.sample", "Apis")
+class Api1 {
+
+    val url1 = "https://www.api1.com"
+
+    fun getObject1(key: String): Any {
+        return ""
     }
-} 
 
-// MODULE: library-b / library-a   , library-c
-package com.bennyhuo.kotlin.mixin
+    fun getObjects1(keys: Array<String>): List<Any> {
+        return emptyList()
+    }
 
-import com.bennyhuo.kotlin.mixin.annotations.Mixin
+    fun save() {
 
-class X1(val x: X)
+    }
 
-@Mixin("com.bennyhuo.kotlin.mixin.annotations", "xyz")
-class Y(val y0: IntArray, val y1: Array<String>) {
-    fun y2() {
-        println("Hello Y")
+    fun save(key: String, value: String) {
+
+    }
+
+    fun save(key: String, value: Any?) {
+
     }
 }
+// MODULE: library-b / library-a   , library-c
+package com.bennyhuo.kotlin.mixin.sample.library2
 
-@Mixin("com.bennyhuo.kotlin.mixin.annotations", "xyz")
-class Z {
-    fun z0() {
-        println("Hello Z")
+import com.bennyhuo.kotlin.mixin.annotations.Mixin
+
+@Mixin("com.bennyhuo.kotlin.mixin.sample", "Apis")
+class Api2 {
+
+    val url2 = "https://www.api1.com"
+
+    fun getObject2(key: String): Any {
+        return ""
     }
-    
-    fun z1(value: String): String = value
+
+    fun getObjects2(keys: Array<String>): List<Any> {
+        return emptyList()
+    }
+
+    fun save() {
+
+    }
+
+    fun save(k: String, v: String) {
+
+    }
+
+    fun save(k: String, v: Any?, options: Int = 0) {
+
+    }
+}
+// MODULE: main / library-a, library-b
+package com.bennyhuo.kotlin.mixin.sample
+
+import com.bennyhuo.kotlin.mixin.annotations.Mixin
+
+@Mixin("com.bennyhuo.kotlin.mixin.sample", "Apis")
+class Api {
+
 }
 // GENERATED
+// MODULE: default-module
 // MODULE: library-a
-// FILE: Xyz.java
-package com.bennyhuo.kotlin.mixin.annotations;
+// FILE: Mixin_com_bennyhuo_kotlin_mixin_sample_library1_Api1.java
+package com.bennyhuo.kotlin.mixin;
 
-import com.bennyhuo.kotlin.mixin.X;
-import java.lang.String;
-import org.jetbrains.annotations.NotNull;
+import com.bennyhuo.kotlin.mixin.annotations.MixinIndex;
 
-public class Xyz {
-  private final X x;
-
-  public Xyz(int x0, String x1) {
-    x = new X(x0,x1);
-  }
-
-  public int getX0() {
-    return x.getX0();
-  }
-
-  @NotNull("")
-  public String getX1() {
-    return x.getX1();
-  }
-
-  public void x2() {
-     x.x2();
-  }
+@MixinIndex({"com.bennyhuo.kotlin.mixin.sample.library1.Api1"})
+class Mixin_com_bennyhuo_kotlin_mixin_sample_library1_Api1 {
 }
 // MODULE: library-b
-// FILE: Xyz.java
-package com.bennyhuo.kotlin.mixin.annotations;
+// FILE: Mixin_com_bennyhuo_kotlin_mixin_sample_library2_Api2.java
+package com.bennyhuo.kotlin.mixin;
 
-import com.bennyhuo.kotlin.mixin.Y;
-import com.bennyhuo.kotlin.mixin.Z;
+import com.bennyhuo.kotlin.mixin.annotations.MixinIndex;
+
+@MixinIndex({"com.bennyhuo.kotlin.mixin.sample.library2.Api2"})
+class Mixin_com_bennyhuo_kotlin_mixin_sample_library2_Api2 {
+}
+// MODULE: main
+// FILE: Apis.java
+package com.bennyhuo.kotlin.mixin.sample;
+
+import com.bennyhuo.kotlin.mixin.sample.library1.Api1;
+import com.bennyhuo.kotlin.mixin.sample.library2.Api2;
+import java.lang.Object;
 import java.lang.String;
-import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
-public class Xyz {
-  private final Y y;
+public class Apis {
+  private final Api api;
 
-  private final Z z;
+  private final Api1 api1;
 
-  public Xyz(int[] y0, String[] y1) {
-    y = new Y(y0,y1);
-    z = new Z();
+  private final Api2 api2;
+
+  public Apis() {
+    api = new Api();
+    api1 = new Api1();
+    api2 = new Api2();
   }
 
-  @NotNull("")
-  public int[] getY0() {
-    return y.getY0();
+  public Object getObject1(String key) {
+    return api1.getObject1(key);
   }
 
-  @NotNull("")
-  public String[] getY1() {
-    return y.getY1();
+  public List<Object> getObjects2(String[] keys) {
+    return api2.getObjects2(keys);
   }
 
-  public void y2() {
-     y.y2();
+  public void save() {
+     api1.save();
+     api2.save();
   }
 
-  public void z0() {
-     z.z0();
+  public void save(String k, Object v, int options) {
+     api2.save(k,v,options);
   }
 
-  @NotNull("")
-  public String z1(String value) {
-    return z.z1(value);
+  public void save(String key, Object value) {
+     api1.save(key,value);
+  }
+
+  public List<Object> getObjects1(String[] keys) {
+    return api1.getObjects1(keys);
+  }
+
+  public Object getObject2(String key) {
+    return api2.getObject2(key);
+  }
+
+  public String getUrl2() {
+    return api2.getUrl2();
+  }
+
+  public void save(String key, String value, String k, String v) {
+     api1.save(key,value);
+     api2.save(k,v);
+  }
+
+  public String getUrl1() {
+    return api1.getUrl1();
   }
 }
+

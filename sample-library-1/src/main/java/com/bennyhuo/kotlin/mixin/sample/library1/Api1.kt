@@ -1,7 +1,6 @@
 package com.bennyhuo.kotlin.mixin.sample.library1
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
-import kotlin.reflect.full.declaredMembers
 
 /**
  * Created by benny.
@@ -29,11 +28,5 @@ class Api1 {
 
     fun save(key: String, value: Any?) {
 
-    }
-}
-
-fun main() {
-    Api1::class.declaredMembers.forEach {
-        println(it.isSuspend)
     }
 }
