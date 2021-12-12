@@ -6,7 +6,7 @@ This is also a sample of [X Processing](https://androidx.tech/artifacts/room/roo
 
 ## Usage
 
-The design of this project is very straight forward.
+The design of this project is very straightforward.
 
 Suppose I have two api classes for User:
 
