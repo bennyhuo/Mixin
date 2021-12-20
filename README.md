@@ -112,7 +112,7 @@ dependencies {
 
 # License
 
-[MIT License](https://github.com/enbandari/KotlinDeepCopy/blob/master/LICENSE)
+[MIT License](https://github.com/bennyhuo/Mixin/blob/master/LICENSE)
 
     Copyright (c) 2021 Bennyhuo
     
