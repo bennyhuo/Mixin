@@ -4,7 +4,6 @@ import androidx.room.compiler.processing.*
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
 import com.squareup.javapoet.*
 import javax.lang.model.element.Modifier
-import javax.tools.Diagnostic
 
 /**
  * Created by benny.
@@ -146,7 +145,8 @@ class MixinGenerator {
     class TypeHub(
         val typeBuilder: TypeSpec.Builder,
         val constructorBuilder: MethodSpec.Builder,
-        val methodBuilders: MutableMap<String, MethodSpec.Builder> = HashMap()
+        // keep insertion order
+        val methodBuilders: LinkedHashMap<String, MethodSpec.Builder> = LinkedHashMap()
     ) {
         fun build(): TypeSpec {
             return typeBuilder.addMethod(constructorBuilder.build())
