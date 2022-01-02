@@ -26,7 +26,7 @@ class Z {
     fun z1(value: String): String = value
 }
 // GENERATED
-//-------Xyz.java------
+// FILE: Xyz.java
 package com.bennyhuo.kotlin.mixin.annotations;
 
 import com.bennyhuo.kotlin.mixin.X;

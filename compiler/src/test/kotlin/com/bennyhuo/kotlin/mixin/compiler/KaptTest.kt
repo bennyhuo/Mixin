@@ -1,5 +1,6 @@
 package com.bennyhuo.kotlin.mixin.compiler
 
+import com.tschuchort.compiletesting.SourceFile
 import org.junit.Test
 
 /**
@@ -7,8 +8,16 @@ import org.junit.Test
  */
 class KaptTest {
 
-    fun doTest(path: String) = doTest(path) { name, sourceFiles ->
-        KaptModule(name, MixinKaptProcessor()).also { it.addSourceFiles(sourceFiles) } 
+    fun doTest(path: String) = doTest(path) { moduleInfo ->
+        KaptModule(
+            moduleInfo.name,
+            moduleInfo.args,
+            moduleInfo.sourceFileInfos.map { sourceFileInfo ->
+                SourceFile.new(sourceFileInfo.fileName, sourceFileInfo.sourceBuilder.toString())
+            },
+            moduleInfo.dependencies,
+            MixinKaptProcessor()
+        )
     }
 
     @Test

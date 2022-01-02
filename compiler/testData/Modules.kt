@@ -1,5 +1,5 @@
 // SOURCE
-// MODULE: library-a
+// MODULE: library-a #mixin.library:true
 package com.bennyhuo.kotlin.mixin.sample.library1
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
@@ -30,7 +30,7 @@ class Api1 {
 
     }
 }
-// MODULE: library-b / library-a   , library-c
+// MODULE: library-b / library-a   , library-c #mixin.library:true
 package com.bennyhuo.kotlin.mixin.sample.library2
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
@@ -60,7 +60,7 @@ class Api2 {
 
     }
 }
-// MODULE: main / library-a, library-b
+// MODULE: main / library-a, library-b, c, d
 package com.bennyhuo.kotlin.mixin.sample
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
@@ -70,7 +70,6 @@ class Api {
 
 }
 // GENERATED
-// MODULE: default-module
 // MODULE: library-a
 // FILE: Mixin_com_bennyhuo_kotlin_mixin_sample_library1_Api1.java
 package com.bennyhuo.kotlin.mixin;
@@ -116,8 +115,12 @@ public class Apis {
     return api1.getObject1(key);
   }
 
-  public List<Object> getObjects2(String[] keys) {
-    return api2.getObjects2(keys);
+  public List<Object> getObjects1(String[] keys) {
+    return api1.getObjects1(keys);
+  }
+
+  public String getUrl1() {
+    return api1.getUrl1();
   }
 
   public void save() {
@@ -125,24 +128,8 @@ public class Apis {
      api2.save();
   }
 
-  public void save(String k, Object v, int options) {
-     api2.save(k,v,options);
-  }
-
   public void save(String key, Object value) {
      api1.save(key,value);
-  }
-
-  public List<Object> getObjects1(String[] keys) {
-    return api1.getObjects1(keys);
-  }
-
-  public Object getObject2(String key) {
-    return api2.getObject2(key);
-  }
-
-  public String getUrl2() {
-    return api2.getUrl2();
   }
 
   public void save(String key, String value, String k, String v) {
@@ -150,7 +137,19 @@ public class Apis {
      api2.save(k,v);
   }
 
-  public String getUrl1() {
-    return api1.getUrl1();
+  public Object getObject2(String key) {
+    return api2.getObject2(key);
+  }
+
+  public List<Object> getObjects2(String[] keys) {
+    return api2.getObjects2(keys);
+  }
+
+  public String getUrl2() {
+    return api2.getUrl2();
+  }
+
+  public void save(String k, Object v, int options) {
+     api2.save(k,v,options);
   }
 }

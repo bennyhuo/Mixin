@@ -1,5 +1,6 @@
 package com.bennyhuo.kotlin.mixin.compiler
 
+import com.tschuchort.compiletesting.SourceFile
 import org.junit.Test
 
 /**
@@ -7,8 +8,16 @@ import org.junit.Test
  */
 class KspTest {
 
-    fun doTest(path: String) = doTest(path) { name, sourceFiles ->
-        KspModule(name, MixinKspProcessor.Provider()).also { it.addSourceFiles(sourceFiles) }
+    fun doTest(path: String) = doTest(path) { moduleInfo ->
+        KspModule(
+            moduleInfo.name,
+            moduleInfo.args,
+            moduleInfo.sourceFileInfos.map { sourceFileInfo ->
+                SourceFile.new(sourceFileInfo.fileName, sourceFileInfo.sourceBuilder.toString())
+            },
+            moduleInfo.dependencies,
+            MixinKspProcessor.Provider()
+        )
     }
 
     @Test
