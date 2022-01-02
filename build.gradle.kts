@@ -2,6 +2,7 @@ buildscript {
     repositories {
         maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
     }
+
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")

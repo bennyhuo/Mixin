@@ -9,12 +9,6 @@ repositories {
     mavenCentral()
 }
 
-kapt {
-    arguments {
-        arg("mixin.main", "true")
-    }
-}
-
 val useKsp = extra.get("useKsp") == "true"
 
 dependencies {
