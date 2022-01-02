@@ -38,6 +38,7 @@ class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
     }
 }
 // GENERATED
+// FILE: Mn.java
 package com.bennyhuo.kotlin.mixin.annotations;
 
 import com.bennyhuo.kotlin.mixin.A;

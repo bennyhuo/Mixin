@@ -8,11 +8,14 @@ import javax.annotation.processing.AbstractProcessor
 /**
  * Created by benny.
  */
-abstract class Module(val name: String) {
-
+abstract class Module(
+    val name: String,
+    val args: Map<String, String>,
+    val sourceFiles: List<SourceFile>,
+    val dependencyNames: List<String>
+) {
     val classpaths = ArrayList<File>()
 
-    val dependencyNames = ArrayList<String>()
     val dependencies = ArrayList<Module>()
 
     var isCompiled = false
@@ -22,15 +25,17 @@ abstract class Module(val name: String) {
     abstract val generatedSourceDir: File
 
     abstract val classesDir: File
-    
-    abstract fun setArgs(args: Map<String, String>)
+
+    protected abstract fun setupArgs()
 
     val isReadyToCompile: Boolean
         get() {
             return !isCompiled && dependencies.all { it.isCompiled }
         }
 
-    protected val compilation = newCompilation()
+    protected val compilation = newCompilation().also {
+        it.sources = sourceFiles
+    }
 
     protected fun newCompilation(): KotlinCompilation {
         return KotlinCompilation().also { compilation ->
@@ -50,20 +55,28 @@ abstract class Module(val name: String) {
         compilation.sources += sourceFiles
     }
 
-    fun resolveDependencies(compileUnits: Map<String, Module>) {
+    fun resolveDependencies(moduleMap: Map<String, Module>) {
         dependencyNames.mapNotNull {
-            compileUnits[it]
+            moduleMap[it]
         }.forEach {
             dependsOn(it)
         }
     }
 
-    open fun compile(args: Map<String, String> = emptyMap()) {
+    open fun compile() {
         if (isCompiled) return
+        ensureDependencies()
+
         isCompiled = true
-        
-        setArgs(args)
+
+        setupArgs()
         compileResult = compilation.compile()
+    }
+
+    private fun ensureDependencies() {
+        dependencies.forEach {
+            it.compile()
+        }
     }
 
     override fun toString() =
@@ -73,8 +86,11 @@ abstract class Module(val name: String) {
 
 class KspModule(
     moduleName: String,
+    args: Map<String, String>,
+    sourceFiles: List<SourceFile>,
+    dependencyNames: List<String>,
     vararg kspProcessorProviders: SymbolProcessorProvider
-) : Module(moduleName) {
+) : Module(moduleName, args, sourceFiles, dependencyNames) {
 
     init {
         compilation.symbolProcessorProviders += kspProcessorProviders
@@ -84,15 +100,15 @@ class KspModule(
 
     private val realCompilation = newCompilation()
     override val classesDir: File = realCompilation.classesDir
-    
-    override fun setArgs(args: Map<String, String>) {
+
+    override fun setupArgs() {
         compilation.kspArgs.putAll(args)
         realCompilation.kspArgs.putAll(args)
     }
 
-    override fun compile(args: Map<String, String>) {
-        super.compile(args)
-        
+    override fun compile() {
+        super.compile()
+
         realCompilation.sources = compilation.sources + compilation.kspSourcesDir.walkTopDown()
             .filter { !it.isDirectory }
             .map {
@@ -105,8 +121,11 @@ class KspModule(
 
 class KaptModule(
     moduleName: String,
-    vararg kaptProcessors: AbstractProcessor
-) : Module(moduleName) {
+    args: Map<String, String>,
+    sourceFiles: List<SourceFile>,
+    dependencyNames: List<String>,
+    vararg kaptProcessors: AbstractProcessor,
+) : Module(moduleName, args, sourceFiles, dependencyNames) {
 
     init {
         compilation.annotationProcessors += kaptProcessors
@@ -114,8 +133,21 @@ class KaptModule(
 
     override val generatedSourceDir: File = compilation.kaptSourceDir
     override val classesDir: File = compilation.classesDir
-    
-    override fun setArgs(args: Map<String, String>) {
+
+    override fun setupArgs() {
         compilation.kaptArgs.putAll(args)
+    }
+}
+
+fun Collection<Module>.resolveAllDependencies() {
+    val moduleMap = this.associateBy { it.name }
+    forEach {
+        it.resolveDependencies(moduleMap)
+    }
+}
+
+fun Collection<Module>.compileAll() {
+    forEach {
+        it.compile()
     }
 }
