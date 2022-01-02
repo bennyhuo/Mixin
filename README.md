@@ -129,13 +129,13 @@ and want to generate the mixed class `Api.java` into module `main`, we should ad
 // for kapt
 kapt {
     arguments {
-        arg("mixin.main", "true")
+        arg("mixin.library", "true")
     }
 }
 
 // for ksp
 ksp {
-    arg("mixin.main", "true")
+    arg("mixin.library", "true")
 }
 ```
 
