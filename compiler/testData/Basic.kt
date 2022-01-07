@@ -79,4 +79,3 @@ public class Xyz {
     return z.z1(value);
   }
 }
-
