@@ -15,6 +15,8 @@ dependencies {
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.6")
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.6")
 
+    testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.2")
+
     testImplementation(kotlin("test-common"))
     testImplementation(kotlin("test-annotations-common"))
     testImplementation(kotlin("test-junit"))
