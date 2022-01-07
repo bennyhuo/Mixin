@@ -31,7 +31,7 @@ fun doTest(path: String, creator: (SourceModuleInfo) -> KotlinModule) {
     testModules.forEach { module ->
         contentCollector.first.append("// MODULE: ${module.name}\n")
         contentCollector.second.append("// MODULE: ${module.name}\n")
-        module.generatedSourceDir.walkTopDown()
+        module.generatedSourceDirs.flatMap { it.walkTopDown() }
             .filter { !it.isDirectory }
             .forEach {
                 contentCollector.first.append("// FILE: ${it.name}\n")
