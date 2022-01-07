@@ -94,12 +94,19 @@ class MixinGenerator {
                         }
                         
                         val args = StringBuilder()
-                        methodElement.parameters.forEach { parameterElement ->
-                            methodBuilder.addParameter(
-                                parameterElement.type.typeName,
-                                parameterElement.name
-                            )
-                            args.append(parameterElement.name).append(",")
+                        if (methodBuilder.parameters.isEmpty()) {
+                            methodElement.parameters.forEach { parameterElement ->
+                                methodBuilder.addParameter(
+                                    parameterElement.type.typeName,
+                                    parameterElement.name
+                                )
+                                args.append(parameterElement.name).append(",")
+                            }
+                        } else {
+                            // for same methods
+                            methodBuilder.parameters.forEach {
+                                args.append(it.name).append(",")
+                            }
                         }
 
                         val returnLiteral = if (methodElement.returnType.isVoid()) {
