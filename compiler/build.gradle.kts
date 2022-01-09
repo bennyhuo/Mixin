@@ -12,7 +12,7 @@ dependencies {
     implementation("androidx.room:room-compiler-processing:2.4.0")
     implementation("com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.2")
 
-    testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.3")
+    testImplementation("com.bennyhuo.kotlin:kotlin-compile-testing-extensions:0.4")
 
     testImplementation(kotlin("test-common"))
     testImplementation(kotlin("test-annotations-common"))
