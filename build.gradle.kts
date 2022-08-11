@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        mavenCentral()
+        maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.0")
@@ -14,7 +14,7 @@ val VERSION_NAME: String by extra
 
 subprojects {
     repositories {
-        mavenCentral()
+        maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
     }
     
     if (!name.startsWith("sample")) {
