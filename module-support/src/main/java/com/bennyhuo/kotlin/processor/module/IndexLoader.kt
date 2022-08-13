@@ -1,22 +1,18 @@
 package com.bennyhuo.kotlin.processor.module
 
+import javax.lang.model.element.TypeElement
+
 /**
  * Created by benny.
  */
 interface IndexLoader<Element> {
 
-    fun getAnnotation(element: Element): LibraryIndex?
+    val annotations: Set<String>
 
-    fun getElement(name: String): Element?
+    fun getElements(enclosingTypeName: String): Map<TypeElement, Collection<javax.lang.model.element.Element>>
 
-    fun getIndexes(): List<Element>
+    fun getIndexes(): List<LibraryIndex>
 
-    fun load(): List<Element> {
-        return getIndexes().mapNotNull {
-            getAnnotation(it)
-        }.flatMap {
-            it.value.mapNotNull { getElement(it) }
-        }
-    }
+
 
 }

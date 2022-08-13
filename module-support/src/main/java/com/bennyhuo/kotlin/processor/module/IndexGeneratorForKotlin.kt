@@ -1,20 +1,10 @@
 package com.bennyhuo.kotlin.processor.module
 
 import com.bennyhuo.kotlin.processor.module.utils.generateName
-import com.squareup.javapoet.AnnotationSpec
-import com.squareup.javapoet.TypeSpec
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.TypeSpec
 
-/**
- * Created by benny.
- */
-
-interface IndexGenerator<Element> {
-
-    fun generate(elements: Collection<Element>)
-
-}
-
-interface IndexGeneratorForJava<Element> : IndexGenerator<Element> {
+interface IndexGeneratorForKotlin<Element> : IndexGenerator<Element> {
 
     fun getElementName(element: Element): String
 
@@ -25,18 +15,18 @@ interface IndexGeneratorForJava<Element> : IndexGenerator<Element> {
     override fun generate(elements: Collection<Element>) {
         if (elements.isEmpty()) return
 
-        val sortedElementNames = elements.map { getElementName(it) }.distinct().sortedBy { it }
+        val sortedElements = elements.sortedBy { getElementName(it) }
 
-        val indexName = "LibraryIndex_${generateName(sortedElementNames)}"
+        val indexName = "LibraryIndex_${generateName(sortedElements.map { getElementName(it) })}"
         val typeSpec = TypeSpec.classBuilder(indexName)
             .addAnnotation(
                 AnnotationSpec.builder(LibraryIndex::class.java)
                     .addMember(
-                        "value", "{${sortedElementNames.joinToString { "\$S" }}}",
-                        *sortedElementNames.toTypedArray()
+                        "value", "{${sortedElements.joinToString { "\$S" }}}",
+                        *sortedElements.map { getElementName(it) }.toTypedArray()
                     ).build()
             ).also { typeBuilder ->
-                addOriginatingElements(typeBuilder, elements)
+                addOriginatingElements(typeBuilder, sortedElements)
             }
             .build()
 

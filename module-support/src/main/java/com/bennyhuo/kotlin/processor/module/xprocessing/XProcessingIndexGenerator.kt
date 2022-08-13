@@ -1,5 +1,6 @@
 package com.bennyhuo.kotlin.processor.module.xprocessing
 
+import androidx.room.compiler.processing.XElement
 import androidx.room.compiler.processing.XFiler
 import androidx.room.compiler.processing.XProcessingEnv
 import androidx.room.compiler.processing.XTypeElement
@@ -14,13 +15,13 @@ import com.squareup.javapoet.TypeSpec
  */
 class XProcessingIndexGenerator(
     private val env: XProcessingEnv
-) : IndexGeneratorForJava<XTypeElement> {
+) : IndexGeneratorForJava<XElement> {
 
-    override fun getElementName(element: XTypeElement): String {
-        return element.qualifiedName
+    override fun getElementName(element: XElement): String {
+        return element.getEnclosingTypeName()
     }
 
-    override fun addOriginatingElements(typeSpecBuilder: TypeSpec.Builder, elements: Collection<XTypeElement>) {
+    override fun addOriginatingElements(typeSpecBuilder: TypeSpec.Builder, elements: Collection<XElement>) {
         elements.forEach {
             typeSpecBuilder.addOriginatingElement(it)
         }
