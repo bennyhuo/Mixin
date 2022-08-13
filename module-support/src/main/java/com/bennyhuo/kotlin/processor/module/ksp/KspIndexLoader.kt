@@ -1,7 +1,5 @@
 package com.bennyhuo.kotlin.processor.module.ksp
 
-import androidx.room.compiler.processing.XElement
-import androidx.room.compiler.processing.XTypeElement
 import com.bennyhuo.kotlin.processor.module.LibraryIndex
 import com.bennyhuo.kotlin.processor.module.utils.PACKAGE_NAME
 import com.google.devtools.ksp.getAnnotationsByType
@@ -9,7 +7,6 @@ import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSDeclarationContainer
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 
@@ -22,10 +19,12 @@ class KspIndexLoader(
 ) {
 
     fun findAnnotatedElementsByTypeName(enclosingTypeName: String): Collection<Pair<KSClassDeclaration, KSAnnotated>> {
-        val enclosingTypeElement = resolver.getClassDeclarationByName(enclosingTypeName)!!
-        val annotationElements = annotations.mapNotNull { resolver.getClassDeclarationByName(it) }
+        val declarationName = DeclarationName.parse(enclosingTypeName)
 
-        return findAnnotatedElements(enclosingTypeElement, annotationElements)
+        val annotationElements = annotations.mapNotNull { resolver.getClassDeclarationByName(it) }
+        return resolver.getDeclarations(declarationName).flatMap {
+            findAnnotatedElements(it, annotationElements)
+        }
     }
 
     private fun findAnnotatedElements(

@@ -1,5 +1,11 @@
 package com.bennyhuo.kotlin.processor.module.ksp
 
+import com.google.devtools.ksp.getClassDeclarationByName
+import com.google.devtools.ksp.getFunctionDeclarationsByName
+import com.google.devtools.ksp.getPropertyDeclarationByName
+import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.symbol.KSDeclaration
+
 /**
  * Created by benny.
  */
@@ -19,5 +25,18 @@ class DeclarationName(val name: String, val type: Int) {
 
     override fun toString(): String {
         return "$name|$type"
+    }
+}
+
+fun Resolver.getDeclarations(declarationName: DeclarationName): Collection<KSDeclaration> {
+    return when (declarationName.type) {
+        DECLARATION_CLASS -> {
+            getClassDeclarationByName(declarationName.name)?.let { listOf(it) } ?: emptyList()
+        }
+        DECLARATION_FUNCTION -> getFunctionDeclarationsByName(declarationName.name, true).toList()
+        DECLARATION_PROPERTY -> {
+            getPropertyDeclarationByName(declarationName.name, true)?.let { listOf(it) } ?: emptyList()
+        }
+        else -> throw IllegalArgumentException()
     }
 }
