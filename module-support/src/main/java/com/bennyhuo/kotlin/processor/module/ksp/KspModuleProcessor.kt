@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.processor.module.ksp
 
-import com.bennyhuo.kotlin.processor.module.utils.OPTION_KEY
+import com.bennyhuo.kotlin.processor.module.utils.OPTION_KEY_LIBRARY
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -17,7 +17,7 @@ abstract class KspModuleProcessor(
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val elementsByAnnotation = annotations.associateWith { resolver.getSymbolsWithAnnotation(it).toSet() }
-        val isMainModule = env.options[OPTION_KEY].toBoolean()
+        val isMainModule = env.options[OPTION_KEY_LIBRARY].toBoolean()
         return if (isMainModule) {
             val elementsFromLibrary = KspIndexLoader(resolver, annotations).load()
             processMain(resolver, elementsByAnnotation.mapValues {

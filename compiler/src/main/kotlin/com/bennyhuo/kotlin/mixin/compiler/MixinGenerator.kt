@@ -10,7 +10,7 @@ import javax.lang.model.element.Modifier
  */
 class MixinGenerator {
 
-    fun generate(env: XProcessingEnv, elements: List<XTypeElement>) {
+    fun generate(env: XProcessingEnv, elements: Collection<XTypeElement>) {
         elements.sortedBy { it.qualifiedName }
             .groupingBy {
                 it.getAnnotation(Mixin::class)!!.value.let {

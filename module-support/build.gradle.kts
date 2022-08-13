@@ -8,7 +8,7 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    compileOnly("androidx.room:room-compiler-processing:2.4.2")
+    compileOnly("androidx.room:room-compiler-processing:2.4.0")
     compileOnly("com.google.devtools.ksp:symbol-processing-api:1.7.10-1.0.6")
     compileOnly("com.squareup:kotlinpoet-ksp:1.12.0")
 }

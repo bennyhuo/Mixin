@@ -1,6 +1,6 @@
 package com.bennyhuo.kotlin.processor.module.apt
 
-import com.bennyhuo.kotlin.processor.module.utils.OPTION_KEY
+import com.bennyhuo.kotlin.processor.module.utils.OPTION_KEY_LIBRARY
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -24,7 +24,7 @@ abstract class AptModuleProcessor : AbstractProcessor() {
             it.qualifiedName.toString() to roundEnv.getElementsAnnotatedWith(it)
         }
 
-        val isMainModule = env.options[OPTION_KEY].toBoolean()
+        val isMainModule = env.options[OPTION_KEY_LIBRARY].toBoolean()
         if (isMainModule) {
             val elementsFromLibrary = AptIndexLoader(env, supportedAnnotationTypes).load()
             processMain(roundEnv, elementsByAnnotation.mapValues {
