@@ -1,5 +1,5 @@
 // SOURCE
-// MODULE: library-a #mixin.library:true
+// MODULE: library-a #mixin.module:library
 package com.bennyhuo.kotlin.mixin.sample.library1
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
@@ -30,7 +30,7 @@ class Api1 {
 
     }
 }
-// MODULE: library-b / library-a   , library-c #mixin.library:true
+// MODULE: library-b / library-a   , library-c #mixin.module:library
 package com.bennyhuo.kotlin.mixin.sample.library2
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin

@@ -2,6 +2,8 @@ package com.bennyhuo.kotlin.mixin.compiler
 
 import androidx.room.compiler.processing.*
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
+import com.bennyhuo.kotlin.processor.module.common.MODULE_LIBRARY
+import com.bennyhuo.kotlin.processor.module.common.MODULE_MAIN
 import com.bennyhuo.kotlin.processor.module.xprocessing.XProcessingModuleStep
 
 /**
@@ -10,6 +12,8 @@ import com.bennyhuo.kotlin.processor.module.xprocessing.XProcessingModuleStep
 class MixinProcessingStep : XProcessingModuleStep() {
 
     override val processorName: String = "mixin"
+
+    override val supportedModuleTypes: Set<Int> = setOf(MODULE_MAIN, MODULE_LIBRARY)
 
     override fun annotations(): Set<String> {
         return setOf(Mixin::class.java.name)
