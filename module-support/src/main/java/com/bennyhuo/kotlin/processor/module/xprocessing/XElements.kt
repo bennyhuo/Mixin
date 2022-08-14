@@ -9,7 +9,7 @@ import androidx.room.compiler.processing.XTypeElement
 /**
  * Created by benny.
  */
-fun XElement.getEnclosingTypeName(): String {
+internal fun XElement.getEnclosingTypeName(): String {
     return when (this) {
         is XTypeElement -> this.qualifiedName
         is XFieldElement -> enclosingElement.className.canonicalName()

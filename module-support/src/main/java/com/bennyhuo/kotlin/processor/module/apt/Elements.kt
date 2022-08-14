@@ -8,7 +8,7 @@ import javax.lang.model.util.SimpleElementVisitor8
 /**
  * Created by benny.
  */
-fun Element.getEnclosingType(): TypeElement {
+internal fun Element.getEnclosingType(): TypeElement {
     return when (val element = enclosingElement) {
         is PackageElement -> throw IllegalArgumentException()
         is TypeElement -> element

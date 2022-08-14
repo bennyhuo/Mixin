@@ -15,7 +15,7 @@ abstract class XProcessingModuleStep : XProcessingStep {
     final override fun process(env: XProcessingEnv, elementsByAnnotation: Map<String, Set<XElement>>): Set<XElement> {
         val isMainModule = !env.options["${optionKeyPrefix}.${OPTION_KEY_LIBRARY}"].toBoolean()
         return if (isMainModule) {
-            val elementsFromLibrary = XProcessingIndexLoader(env, annotations()).load()
+            val elementsFromLibrary = XProcessingIndexLoader(env, annotations()).loadUnwrap()
             processMain(env, elementsByAnnotation.mapValues {
                 it.value + elementsFromLibrary.getOrDefault(it.key, emptySet())
             })
@@ -28,7 +28,9 @@ abstract class XProcessingModuleStep : XProcessingStep {
     abstract fun processMain(env: XProcessingEnv, elementsByAnnotation: Map<String, Set<XElement>>): Set<XElement>
 
     open fun processLibrary(env: XProcessingEnv, elementsByAnnotation: Map<String, Set<XElement>>): Set<XElement> {
-        XProcessingIndexGenerator(env).generate(elementsByAnnotation.values.flatten())
+        XProcessingIndexGenerator(env).generate(elementsByAnnotation.values.flatMap {
+            it.map { it.toUniElement() }
+        })
         return emptySet()
     }
 

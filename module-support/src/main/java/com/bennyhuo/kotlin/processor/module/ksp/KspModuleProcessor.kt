@@ -19,7 +19,7 @@ abstract class KspModuleProcessor(
         val elementsByAnnotation = annotations.associateWith { resolver.getSymbolsWithAnnotation(it).toSet() }
         val isMainModule = env.options[OPTION_KEY_LIBRARY].toBoolean()
         return if (isMainModule) {
-            val elementsFromLibrary = KspIndexLoader(resolver, annotations).load()
+            val elementsFromLibrary = KspIndexLoader(resolver, annotations).loadUnwrapped()
             processMain(resolver, elementsByAnnotation.mapValues {
                 it.value + elementsFromLibrary.getOrDefault(it.key, emptySet())
             })
@@ -34,7 +34,9 @@ abstract class KspModuleProcessor(
         resolver: Resolver,
         elementsByAnnotation: Map<String, Set<KSAnnotated>>
     ): List<KSAnnotated> {
-        KspIndexGenerator(env).generate(elementsByAnnotation.values.flatten())
+        KspIndexGenerator(env).generate(elementsByAnnotation.values.flatMap {
+            it.map { it.toUniElement() }
+        })
         return emptyList()
     }
 

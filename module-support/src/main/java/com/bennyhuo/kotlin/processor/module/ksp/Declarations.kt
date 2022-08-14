@@ -11,7 +11,7 @@ import com.google.devtools.ksp.symbol.KSValueParameter
 /**
  * Created by benny.
  */
-fun KSAnnotated.getDeclarationName(): DeclarationName {
+internal fun KSAnnotated.getDeclarationName(): DeclarationName {
     return when (this) {
         is KSClassDeclaration -> DeclarationName(qualifiedName!!.asString(), DECLARATION_CLASS)
         is KSFunctionDeclaration -> DeclarationName(qualifiedName!!.asString(), DECLARATION_FUNCTION)

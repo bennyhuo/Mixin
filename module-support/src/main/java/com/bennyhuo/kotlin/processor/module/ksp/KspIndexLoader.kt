@@ -1,51 +1,37 @@
 package com.bennyhuo.kotlin.processor.module.ksp
 
+import com.bennyhuo.kotlin.processor.module.common.IndexLoader
 import com.bennyhuo.kotlin.processor.module.LibraryIndex
+import com.bennyhuo.kotlin.processor.module.common.UniElement
+import com.bennyhuo.kotlin.processor.module.common.UniTypeElement
 import com.bennyhuo.kotlin.processor.module.utils.PACKAGE_NAME
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSDeclarationContainer
-import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 
 /**
  * Created by benny.
  */
-class KspIndexLoader(
+internal class KspIndexLoader(
     private val resolver: Resolver,
-    val annotations: Set<String>
-) {
+    override val annotations: Set<String>
+) : IndexLoader {
 
-    fun findAnnotatedElementsByTypeName(enclosingTypeName: String): Collection<Pair<KSClassDeclaration, KSAnnotated>> {
+    override fun findAnnotatedElementsByTypeName(enclosingTypeName: String): Collection<Pair<UniTypeElement, UniElement>> {
+        val annotationElements = annotations.mapNotNull { getTypeElement(it) }
         val declarationName = DeclarationName.parse(enclosingTypeName)
 
-        val annotationElements = annotations.mapNotNull { resolver.getClassDeclarationByName(it) }
         return resolver.getDeclarations(declarationName).flatMap {
-            findAnnotatedElements(it, annotationElements)
+            findAnnotatedElements(it.toUniElement(), annotationElements)
         }
     }
 
-    private fun findAnnotatedElements(
-        element: KSAnnotated,
-        annotationElements: Collection<KSClassDeclaration>
-    ): Collection<Pair<KSClassDeclaration, KSAnnotated>> {
-        return ((element as? KSDeclarationContainer)?.declarations?.filter {
-            // TypeElements are already found.
-            it !is KSClassDeclaration
-        }?.flatMap {
-            findAnnotatedElements(it, annotationElements)
-        }?.toList() ?: emptyList()) + ((element as? KSFunctionDeclaration)?.parameters?.flatMap {
-            findAnnotatedElements(it, annotationElements)
-        } ?: emptyList()) + annotationElements.filter { annotationElement ->
-            element.annotations.any { it.annotationType.resolve().declaration == annotationElement }
-        }.map {
-            it to element
-        }
+    override fun getTypeElement(typeName: String): UniTypeElement? {
+        return resolver.getClassDeclarationByName(typeName)?.toUniElement()
     }
 
-    fun getIndexes(): List<LibraryIndex> {
+    override fun getIndexes(): List<LibraryIndex> {
         return resolver.getDeclarationsFromPackage(PACKAGE_NAME)
             .filterIsInstance<KSClassDeclaration>()
             .mapNotNull {
@@ -53,14 +39,9 @@ class KspIndexLoader(
             }.toList()
     }
 
-    fun load(): Map<KSClassDeclaration, List<KSAnnotated>> {
-        return getIndexes().flatMap {
-            it.value.flatMap { findAnnotatedElementsByTypeName(it) }
-        }.fold(HashMap<KSClassDeclaration, ArrayList<KSAnnotated>>()) { acc, pair ->
-            acc.also { map ->
-                map.getOrPut(pair.first) { ArrayList() }.add(pair.second)
-            }
-        }
+    fun loadUnwrapped() = load().mapKeys {
+        it.key.unwrapKsp()
+    }.mapValues {
+        it.value.map { it.unwrapKsp() }
     }
-
 }

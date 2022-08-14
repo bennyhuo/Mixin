@@ -1,6 +1,7 @@
 package com.bennyhuo.kotlin.processor.module.ksp
 
-import com.bennyhuo.kotlin.processor.module.IndexGeneratorForKotlin
+import com.bennyhuo.kotlin.processor.module.common.IndexGeneratorForKotlin
+import com.bennyhuo.kotlin.processor.module.common.UniElement
 import com.bennyhuo.kotlin.processor.module.utils.PACKAGE_NAME
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -14,20 +15,9 @@ import com.squareup.kotlinpoet.ksp.writeTo
 /**
  * Created by benny.
  */
-class KspIndexGenerator(
+internal class KspIndexGenerator(
     private val env: SymbolProcessorEnvironment
-) : IndexGeneratorForKotlin<KSAnnotated> {
-
-    override fun getElementName(element: KSAnnotated): String {
-        return element.getDeclarationName().toString()
-    }
-
-    override fun addOriginatingElements(typeSpecBuilder: TypeSpec.Builder, elements: Collection<KSAnnotated>) {
-        elements.forEach {
-            typeSpecBuilder.addOriginatingKSFile(it.containingFile!!)
-        }
-    }
-
+) : IndexGeneratorForKotlin {
     override fun writeType(typeSpec: TypeSpec) {
         FileSpec.builder(PACKAGE_NAME, typeSpec.name!!).build().writeTo(env.codeGenerator, true)
     }

@@ -26,7 +26,7 @@ abstract class AptModuleProcessor : AbstractProcessor() {
 
         val isMainModule = env.options[OPTION_KEY_LIBRARY].toBoolean()
         if (isMainModule) {
-            val elementsFromLibrary = AptIndexLoader(env, supportedAnnotationTypes).load()
+            val elementsFromLibrary = AptIndexLoader(env, supportedAnnotationTypes).loadUnwrap()
             processMain(roundEnv, elementsByAnnotation.mapValues {
                 it.value + elementsFromLibrary.getOrDefault(it.key, emptySet())
             })
@@ -41,7 +41,9 @@ abstract class AptModuleProcessor : AbstractProcessor() {
     abstract fun processMain(roundEnv: RoundEnvironment, elementsByAnnotation: Map<String, Set<Element>>): Set<Element>
 
     open fun processLibrary(roundEnv: RoundEnvironment, elementsByAnnotation: Map<String, Set<Element>>): Set<Element> {
-        AptIndexGenerator(env).generate(elementsByAnnotation.values.flatten())
+        AptIndexGenerator(env).generate(elementsByAnnotation.values.flatMap {
+            it.map { it.toUniElement() }
+        })
         return emptySet()
     }
 

@@ -1,31 +1,19 @@
-package com.bennyhuo.kotlin.processor.module
+package com.bennyhuo.kotlin.processor.module.common
 
+import com.bennyhuo.kotlin.processor.module.LibraryIndex
 import com.bennyhuo.kotlin.processor.module.utils.generateName
 import com.squareup.javapoet.AnnotationSpec
 import com.squareup.javapoet.TypeSpec
+import javax.lang.model.element.Element
 
-/**
- * Created by benny.
- */
-
-interface IndexGenerator<Element> {
-
-    fun generate(elements: Collection<Element>)
-
-}
-
-interface IndexGeneratorForJava<Element> : IndexGenerator<Element> {
-
-    fun getElementName(element: Element): String
-
-    fun addOriginatingElements(typeSpecBuilder: TypeSpec.Builder, elements: Collection<Element>)
+internal interface IndexGeneratorForJava : IndexGenerator {
 
     fun writeType(typeSpec: TypeSpec)
 
-    override fun generate(elements: Collection<Element>) {
+    override fun generate(elements: Collection<UniElement>) {
         if (elements.isEmpty()) return
 
-        val sortedElementNames = elements.map { getElementName(it) }.distinct().sortedBy { it }
+        val sortedElementNames = elements.map { it.enclosingTypeName }.distinct().sortedBy { it }
 
         val indexName = "LibraryIndex_${generateName(sortedElementNames)}"
         val typeSpec = TypeSpec.classBuilder(indexName)
@@ -36,7 +24,9 @@ interface IndexGeneratorForJava<Element> : IndexGenerator<Element> {
                         *sortedElementNames.toTypedArray()
                     ).build()
             ).also { typeBuilder ->
-                addOriginatingElements(typeBuilder, elements)
+                elements.forEach {
+                    typeBuilder.addOriginatingElement(it.rawElement as Element)
+                }
             }
             .build()
 
