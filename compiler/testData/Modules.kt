@@ -71,22 +71,18 @@ class Api {
 }
 // GENERATED
 // MODULE: library-a
-// FILE: Mixin_com_bennyhuo_kotlin_mixin_sample_library1_Api1.java
-package com.bennyhuo.kotlin.mixin;
+// FILE: MixinIndex_1c45500c60bd256c7e223b64fb158d32.java
+package com.bennyhuo.kotlin.processor.module;
 
-import com.bennyhuo.kotlin.mixin.annotations.MixinIndex;
-
-@MixinIndex({"com.bennyhuo.kotlin.mixin.sample.library1.Api1"})
-class Mixin_com_bennyhuo_kotlin_mixin_sample_library1_Api1 {
+@LibraryIndex({"com.bennyhuo.kotlin.mixin.sample.library1.Api1"})
+class MixinIndex_1c45500c60bd256c7e223b64fb158d32 {
 }
 // MODULE: library-b
-// FILE: Mixin_com_bennyhuo_kotlin_mixin_sample_library2_Api2.java
-package com.bennyhuo.kotlin.mixin;
+// FILE: MixinIndex_9851104842a1a2fab326a8e3527e37f3.java
+package com.bennyhuo.kotlin.processor.module;
 
-import com.bennyhuo.kotlin.mixin.annotations.MixinIndex;
-
-@MixinIndex({"com.bennyhuo.kotlin.mixin.sample.library2.Api2"})
-class Mixin_com_bennyhuo_kotlin_mixin_sample_library2_Api2 {
+@LibraryIndex({"com.bennyhuo.kotlin.mixin.sample.library2.Api2"})
+class MixinIndex_9851104842a1a2fab326a8e3527e37f3 {
 }
 // MODULE: main
 // FILE: Apis.java
@@ -132,9 +128,9 @@ public class Apis {
      api1.save(key,value);
   }
 
-  public void save(String key, String value, String k, String v) {
+  public void save(String key, String value) {
      api1.save(key,value);
-     api2.save(k,v);
+     api2.save(key,value);
   }
 
   public Object getObject2(String key) {

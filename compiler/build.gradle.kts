@@ -8,6 +8,7 @@ plugins {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(project(":annotations"))
+    implementation("com.bennyhuo.kotlin:xprocessing-module-support:0.1")
 
     implementation("androidx.room:room-compiler-processing:2.4.0")
     implementation("com.google.devtools.ksp:symbol-processing-api:1.6.10-1.0.2")
