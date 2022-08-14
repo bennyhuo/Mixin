@@ -38,6 +38,7 @@ class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
     }
 }
 // GENERATED
+// MODULE: default-module
 // FILE: Mn.java
 package com.bennyhuo.kotlin.mixin.annotations;
 
@@ -48,8 +49,6 @@ import com.bennyhuo.kotlin.mixin.M;
 import com.bennyhuo.kotlin.mixin.N;
 import java.lang.Number;
 import java.lang.String;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class Mn<T, P, X extends Number> {
   private final M<T, P> m;
@@ -66,7 +65,6 @@ public class Mn<T, P, X extends Number> {
      m.m0();
   }
 
-  @NotNull("")
   @B(
       a = 1,
       b = "Hello"
@@ -83,17 +81,14 @@ public class Mn<T, P, X extends Number> {
      m.m2(value);
   }
 
-  @Nullable("")
   public P m3() {
     return m.m3();
   }
 
-  @NotNull("")
   public int[] getN0() {
     return n.getN0();
   }
 
-  @NotNull("")
   public String[] getN1() {
     return n.getN1();
   }

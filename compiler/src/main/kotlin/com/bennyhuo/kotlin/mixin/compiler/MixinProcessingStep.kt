@@ -9,7 +9,7 @@ import com.bennyhuo.kotlin.processor.module.xprocessing.XProcessingModuleStep
  */
 class MixinProcessingStep : XProcessingModuleStep() {
 
-    override val optionKeyPrefix = "mixin"
+    override val processorName: String = "mixin"
 
     override fun annotations(): Set<String> {
         return setOf(Mixin::class.java.name)
