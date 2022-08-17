@@ -11,12 +11,12 @@ repositories {
 
 kapt {
     arguments {
-        arg("mixin.library", "true")
+        arg("mixin.module", "library")
     }
 }
 
 ksp {
-    arg("mixin.library", "true")
+    arg("mixin.module", "library")
 }
 
 val useKsp = extra.get("useKsp") == "true"
