@@ -1,5 +1,6 @@
 // SOURCE
-// MODULE: library-a #mixin.module:library
+// MODULE: library-a
+// ARGS: mixin.module=library
 package com.bennyhuo.kotlin.mixin.sample.library1
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
@@ -30,7 +31,8 @@ class Api1 {
 
     }
 }
-// MODULE: library-b / library-a   , library-c #mixin.module:library
+// MODULE: library-b / library-a, library-c
+// ARGS: mixin.module=library
 package com.bennyhuo.kotlin.mixin.sample.library2
 
 import com.bennyhuo.kotlin.mixin.annotations.Mixin
@@ -69,7 +71,7 @@ import com.bennyhuo.kotlin.mixin.annotations.Mixin
 class Api {
 
 }
-// GENERATED
+// EXPECT
 // MODULE: library-a
 // FILE: MixinIndex_1c45500c60bd256c7e223b64fb158d32.java
 package com.bennyhuo.kotlin.processor.module;

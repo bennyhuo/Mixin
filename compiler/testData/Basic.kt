@@ -25,7 +25,7 @@ class Z {
     
     fun z1(value: String): String = value
 }
-// GENERATED
+// EXPECT
 // FILE: Xyz.java
 package com.bennyhuo.kotlin.mixin.annotations;
 

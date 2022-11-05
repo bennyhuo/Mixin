@@ -16,6 +16,7 @@ val VERSION_NAME: String by extra
 subprojects {
     repositories {
         maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
     
     if (!name.startsWith("sample")) {

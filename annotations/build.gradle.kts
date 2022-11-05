@@ -1,3 +1,6 @@
+repositories {
+    mavenCentral()
+}
 plugins {
     kotlin("jvm")
     java
@@ -5,5 +8,5 @@ plugins {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    api("com.bennyhuo.kotlin:annotations-module-support:0.1")
+    api("com.bennyhuo.kotlin:annotations-module-support:1.7.10.1")
 }

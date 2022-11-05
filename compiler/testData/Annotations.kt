@@ -37,7 +37,7 @@ class N<X: Number>(val n0: IntArray, val n1: Array<String>) {
         println(value)
     }
 }
-// GENERATED
+// EXPECT
 // MODULE: default-module
 // FILE: Mn.java
 package com.bennyhuo.kotlin.mixin.annotations;
