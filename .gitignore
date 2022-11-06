@@ -4,3 +4,4 @@ build
 cache
 .gradle
 out
+composite_build.local

@@ -9,7 +9,7 @@ import org.junit.Test
 class KspTest {
 
     fun doTest(path: String) = doTest(path) { moduleInfo ->
-        KotlinModule(moduleInfo, kspProcessorProviders = listOf(MixinKspProcessor.Provider()))
+        KotlinModule(moduleInfo, symbolProcessorProviders = listOf(MixinKspProcessor.Provider()))
     }
 
     @Test

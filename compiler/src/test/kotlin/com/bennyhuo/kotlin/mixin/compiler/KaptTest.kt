@@ -9,7 +9,7 @@ import org.junit.Test
 class KaptTest {
 
     fun doTest(path: String) = doTest(path) { moduleInfo ->
-        KotlinModule(moduleInfo, kaptProcessors = listOf(MixinKaptProcessor()))
+        KotlinModule(moduleInfo, annotationProcessors = listOf(MixinKaptProcessor()))
     }
 
     @Test

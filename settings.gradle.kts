@@ -6,4 +6,12 @@ include("sample")
 include("sample-library-1")
 include("sample-library-2")
 
-includeBuild("D:\\WorkSpace\\External\\kotlin-compile-testing-extensions")
+val local = file("composite_build.local")
+if (local.exists()) {
+    local.forEachLine {
+        val f = file("../$it")
+        if (f.exists()) {
+            includeBuild(f)
+        }
+    }
+}

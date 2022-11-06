@@ -19,11 +19,18 @@ class MixinProcessingStep : XProcessingModuleStep() {
         return setOf(Mixin::class.java.name)
     }
 
-    override fun processMain(env: XProcessingEnv, elementsByAnnotation: Map<String, Set<XElement>>): Set<XElement> {
-        val elements = elementsByAnnotation[Mixin::class.java.name]
+    override fun processMain(
+        env: XProcessingEnv,
+        elementsByAnnotation: Map<String, Set<XElement>>,
+        elementsByAnnotationFromLibrary: Map<String, Set<XElement>>
+    ): Set<XElement> {
+        val elements = HashSet<XElement>()
+        elementsByAnnotation[Mixin::class.java.name]?.let { elements.addAll(it) }
+        elementsByAnnotationFromLibrary[Mixin::class.java.name]?.let { elements.addAll(it) }
+        val typeElements = elements.takeIf { it.isNotEmpty() }
             ?.filterIsInstance<XTypeElement>()
             ?: return emptySet()
-        MixinGenerator().generate(env, elements)
+        MixinGenerator().generate(env, typeElements)
         return emptySet()
     }
 }
